@@ -1,0 +1,281 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+:root {
+  --burnt-orange: #BF5700;
+  --white: #FFFFFF;
+  --black: #000000;
+  --light-gray: #F2F2F2;
+  --dark-gray: #333333;
+}
+
+body {
+  font-family: 'Frutiger', 'Arial', sans-serif;
+  font-size: 16px;
+  color: #333333; /* Dark gray for readability */
+  line-height: 1.5; /* Improves spacing */
+}
+
+/* ExampleButton.css */
+.example-button {
+  background-color: var(--burnt-orange);
+  color: var(--white);
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-family: 'Arial', sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+.example-button:hover {
+  background-color: var(--dark-gray);
+}
+
+/* Apply burnt orange to all regular text */
+body {
+  color: #BF5700; /* Burnt Orange */
+}
+/* Change slider color */
+input[type="range"] {
+  accent-color: #BF5700; /* Burnt Orange */
+}
+
+/* Dropdown (Select Box) */
+select {
+  background-color: #F2F2F2;  /* Light Gray */
+  color: #BF5700;  /* Burnt Orange text */
+  border: 2px solid #BF5700;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+/* Change dropdown options color */
+select option {
+  background-color: white;
+  color: #333333; /* Dark Gray */
+}
+
+
+.total-container{
+  max-width: 100%;
+  width:100%;
+  margin: auto;
+  
+}
+/* Change slider color */
+input[type="range"] {
+  accent-color: #BF5700; /* Burnt Orange */
+}
+
+/* Dropdown (Select Box) */
+select {
+  background-color: white;  /* Light Gray */
+  color: #323D49;  /* Burnt Orange text */
+  border: 2px solid #323D49;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+/* Change dropdown options text color to Dark Blue-Black */
+select option {
+  background-color: white;
+  color: #323D49; /* Dark Blue-Black */
+}
+
+
+/* GitHub Icon Positioning */
+.github-link {
+  position: absolute;
+  top: 20px;   /* Adjust vertical position */
+  left: 20px;  /* Place it on the left side */
+  opacity: 0.6;  /* 60% Opacity */
+  transition: opacity 0.3s ease;
+}
+
+/* Hover Effect: Make Fully Visible on Hover */
+.github-link:hover {
+  opacity: 1;
+}
+
+/* Adjust GitHub Icon Size */
+.github-icon {
+  width: 40px;  /* Adjust size */
+  height: 40px;
+}
+.header-container {
+  width: 100;
+  background-color: #BF5700; /* UT Austin Burnt Orange */
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Content Wrapper */
+.header-content {
+  text-align: center;
+  max-width: 900px;
+  width: 100%;
+}
+/* Main Heading (Big Font) */
+.main-title {
+  font-size: 48px;
+  font-family: 'Frutiger', 'Arial', sans-serif;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+/* Subtitle Text */
+.subtitle {
+  font-size: 20px;
+  font-family: 'Arial', sans-serif;
+  color: white;
+  margin-top: 5px;
+}
+
+/* Highlighted Text */
+.highlight-text {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+
+/* Ensure input fields, buttons, and interactive elements are excluded */
+textarea, button {
+  color: white; /* Keep input and button text white */
+}
+
+/* Override placeholder color */
+textarea::placeholder {
+  color: white;
+}
+
+input[type="text"] {
+  background-color: #F2F2F2;  /* Light Gray */
+  color: #BF5700;  /* Burnt Orange text */
+  border: 2px solid #323D49;  /* Dark Blue-Black Border */
+  padding: 5px;
+  border-radius: 5px;
+}
+
+/* Ensure input text color remains burnt orange when focused */
+input[type="text"]:focus {
+  color: #BF5700;
+  background-color: #F2F2F2;
+  border: 2px solid #323D49;
+  border-radius: 5px;
+}
+
+
+textarea {
+  background-color: #BF5700;  /* Burnt Orange */
+  color: white;
+  border: none;
+  
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none; /* Removes default focus outline */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Placeholder text default (white) */
+textarea::placeholder {
+  color: white;
+  transition: color 0.3s ease;
+}
+
+/* Change placeholder text to #333333 when the field is selected */
+textarea:focus::placeholder {
+  color: #747474;
+}
+
+/* Change background when focused */
+textarea:focus {
+  background-color: #323D49; /* Dark Blue-Gray */
+  color: white; /* Keep typed text white for readability */
+  border: 2px solid white; /* Optional: add a slight border */
+}
+
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+.footer {
+  width: 100%;
+  text-align: center;
+  font-size: 12px; /* Small text size */
+  color: #A0A0A0; /* Light Grey */
+  padding: 2px 0;
+  background-color: #b8611a;
+  position: fixed; /* Sticks to bottom */
+  bottom: 0;
+  left: 0;
+}
+
+@media (max-width: 600px) {
+  .container {
+      width: 95%;
+      padding: 10px;
+  }
+  
+  .title {
+      font-size: 4vw;
+  }
+  
+  .button {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+  }
+  
+}
+@media screen and (max-width: 768px) {
+  .left-section {
+    flex: 1.2;  /* Increase size */
+    transform: scale(1.1);
+  }
+
+  .right-section {
+    flex: 0.8;  /* Decrease size */
+    transform: scale(0.9);
+  }
+
+  .budget-input {
+    font-size: 16px; /* Increase input text size */
+  }
+}
