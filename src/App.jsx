@@ -106,9 +106,9 @@ const handleAccommodationChange = (event) => {
 
       <div className="header-container">
           <div className="header-content">
-              <h1 className="main-title">Aggie Dormia</h1>
+              <h1 className="main-title">Aggie Dormie</h1>
               <p className="subtitle">
-                  Find your perfect dorm at TAMU <span className="highlight-text">milliseconds</span>
+                  Find your perfect dorm at TAMU in <span className="highlight-text">milliseconds</span>
               </p>
           </div>
       </div>
