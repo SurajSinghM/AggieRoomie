@@ -61,12 +61,13 @@ const handleAccommodationChange = (event) => {
     setTop3(null);
     setTop10(null);
 
-    const requestData = {
-        first: selectedOccupants,
-        second: selectedBathroom,
-        third: selectedBudget,
-        fourth: accommodation
-    };
+  const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/data`, {
+    first: occupants,
+    second: bathroom,
+    third: budget,
+    fourth: "" // amenities are not parsed here
+  });
+
 
     fetch(`${API_BASE_URL}/api/data`, {
         method: "POST",
