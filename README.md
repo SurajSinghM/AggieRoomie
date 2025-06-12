@@ -1,16 +1,52 @@
-# [DormMatch](https://www.dormmatch.net) 
-![DormMatch Logo](https://static-00.iconduck.com/assets.00/house-with-garden-emoji-512x512-ffw9splg.png)
+# AggieRoomie
 
-## About DormMatch
-Hi! I'm Chetan Gorantla, the developer of DormMatch. I'm a high school senior (likely attending UT Austin for Computer Science in the fall) passionate about CS, and I built this website to help incoming freshmen at the University of Texas at Austin. **DormMatch** is designed to assist students in choosing a dorm/residence hall that fits them best. My goal is to make choosing your on-campus housing easy, so I hope you find my website useful!
+AggieRoomie is a web application that helps Texas A&M students find their perfect dorm based on their preferences for room type, budget, and location.
 
 ## Features
-- **Web Scraping Data Extraction**: Used BeautifulSoup to retrieve relevant data from the UT Austin housing page.
-- **Dorm Rating System**: Determine a score that each dorm recieves based on your inputted necessities/amenities.
-- **Fuzzy Matching**: Predicts which dorm provisions align best with your amenities requested.
 
-## Contact
-Feel free to check out [DormMatch](https://www.dormmatch.net) and let me know your thoughts! Reach out to chetangorantla7@gmail.com with any questions.
-Futher development may continue to expand the reach to more college campuses, like Texas A&M, UMICH, UIUC, etc.
+- Input preferences for room type, budget, and location
+- Get ranked recommendations for the top 3 dorms matching your criteria
+- View detailed information about each recommended dorm
+- Modern, responsive UI with Texas A&M's maroon theme
 
-*NOT AFFILIATED WITH UT AUSTIN*
+## Prerequisites
+
+- Node.js (v14 or higher)
+- npm (Node Package Manager)
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/AggieRoomie.git
+cd AggieRoomie
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+## Running the Application
+
+1. Start the development server:
+```bash
+npm run dev
+```
+
+2. Open your web browser and navigate to:
+```
+http://localhost:3000
+```
+
+## Technologies Used
+
+- Node.js
+- Express.js
+- EJS (Embedded JavaScript templating)
+- Bootstrap 5
+- JavaScript (ES6+)
+
+## Contributing
+
+Feel free to submit issues and enhancement requests! 

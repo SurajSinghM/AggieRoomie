@@ -1,9 +1,0 @@
-__pycache__/
-*.log
-*.gz
-*.zip
-*.tar
-*.sqlite3
-node_modules/
-tests/
-docs/
