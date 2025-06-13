@@ -1,6 +1,60 @@
 {
   "dorms": [
     {
+      "name": "Appelt Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6170,
+        "lng": -96.3360
+      },
+      "roomTypes": ["Double", "Single"],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "rating": 4.0,
+        "reviews": 85
+      }
+    },
+    {
+      "name": "Eppright Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6169,
+        "lng": -96.3359
+      },
+      "roomTypes": ["Double", "Single"],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "rating": 4.1,
+        "reviews": 90
+      }
+    },
+    {
       "name": "Aston Hall",
       "location": "North Campus",
       "coordinates": {
@@ -325,6 +379,141 @@
       "googleReview": {
         "rating": 4.0,
         "reviews": 85
+      }
+    },
+    {
+      "name": "Neeley Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.6183,
+        "lng": -96.3377
+      },
+      "roomTypes": ["Double", "Single"],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,400"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,400"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2013",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "rating": 4.3,
+        "reviews": 105
+      }
+    },
+    {
+      "name": "Walton Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.6181,
+        "lng": -96.3374
+      },
+      "roomTypes": ["Double", "Single"],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,300"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,300"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2013",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "rating": 4.2,
+        "reviews": 98
+      }
+    },
+    {
+      "name": "Haas Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6172,
+        "lng": -96.3362
+      },
+      "roomTypes": ["Double", "Single"],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "rating": 4.1,
+        "reviews": 92
+      }
+    },
+    {
+      "name": "McFadden Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6171,
+        "lng": -96.3361
+      },
+      "roomTypes": ["Double", "Single"],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "rating": 4.0,
+        "reviews": 88
+      }
+    },
+    {
+      "name": "Wells Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6168,
+        "lng": -96.3358
+      },
+      "roomTypes": ["Double", "Single"],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "rating": 4.0,
+        "reviews": 87
       }
     }
   ]

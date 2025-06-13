@@ -124,7 +124,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Google Maps JavaScript API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=<%= process.env.GOOGLE_MAPS_API_KEY %>&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= googleMapsApiKey %>&callback=initMap" async defer></script>
     
     <!-- Custom JS -->
     <script>
@@ -150,28 +150,45 @@
 
             // Add markers for each dorm
             const dorms = <%- JSON.stringify(dorms) %>;
+            console.log('Received dorms data:', dorms);
             const dormList = document.getElementById('dormList');
             
             dorms.forEach(dorm => {
+                if (!dorm.coordinates) {
+                    console.warn(`No coordinates found for ${dorm.name}`);
+                    return;
+                }
+
+                console.log(`Creating marker for ${dorm.name} at:`, dorm.coordinates);
+
                 // Create marker
                 const marker = new google.maps.Marker({
-                    position: dorm.location,
+                    position: {
+                        lat: parseFloat(dorm.coordinates.lat),
+                        lng: parseFloat(dorm.coordinates.lng)
+                    },
                     map: map,
                     title: dorm.name,
-                    animation: google.maps.Animation.DROP
+                    animation: google.maps.Animation.DROP,
+                    icon: {
+                        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                        scaledSize: new google.maps.Size(32, 32)
+                    }
                 });
 
                 // Create info window
                 const infoWindow = new google.maps.InfoWindow({
-                    content: `
-                        <div class="info-window">
-                            <h3>${dorm.name}</h3>
-                            <p><strong>Location:</strong> ${dorm.campusLocation}</p>
-                            <p><strong>Room Types:</strong> ${dorm.roomTypes.join(', ')}</p>
-                            <p><strong>Rates:</strong> ${dorm.rates.map(rate => `${rate.roomType}: ${rate.rate}`).join(', ')}</p>
-                            <a href="/?dorm=${encodeURIComponent(dorm.name)}" class="btn">View Details</a>
-                        </div>
-                    `
+                    content: '<div class="info-window">' +
+                        '<h3>' + dorm.name + '</h3>' +
+                        '<p><strong>Location:</strong> ' + dorm.location + '</p>' +
+                        '<p><strong>Room Types:</strong> ' + dorm.roomTypes.join(', ') + '</p>' +
+                        '<p><strong>Rates:</strong></p>' +
+                        '<ul>' + dorm.rates.map(rate => '<li>' + rate.type + ': ' + rate.rate + '</li>').join('') + '</ul>' +
+                        (dorm.googleReview ? 
+                            '<p><strong>Google Rating:</strong> ' + dorm.googleReview.rating + ' ⭐ (' + dorm.googleReview.reviews + ' reviews)</p>' 
+                            : '') +
+                        '<a href="/?dorm=' + encodeURIComponent(dorm.name) + '" class="btn">View Details</a>' +
+                        '</div>'
                 });
 
                 // Store marker and info window
@@ -190,7 +207,10 @@
                 dormItem.textContent = dorm.name;
                 dormItem.addEventListener('click', () => {
                     // Center map on dorm
-                    map.setCenter(dorm.location);
+                    map.setCenter({
+                        lat: parseFloat(dorm.coordinates.lat),
+                        lng: parseFloat(dorm.coordinates.lng)
+                    });
                     map.setZoom(17);
                     
                     // Open info window
@@ -201,6 +221,7 @@
                     document.querySelectorAll('.dorm-item').forEach(item => item.classList.remove('active'));
                     dormItem.classList.add('active');
                 });
+                
                 dormList.appendChild(dormItem);
             });
         }
