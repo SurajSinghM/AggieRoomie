@@ -1,22 +1,24 @@
 # AggieRoomie
 
-A web application to help Texas A&M students find and compare dorm halls.
+AggieRoomie is a web application that helps Texas A&M students find and compare dorm halls. Built with Next.js and the Google Maps API.
 
 ## Features
 
-- Interactive campus map with dorm locations
-- Detailed information about each dorm hall
-- Room type and rate comparisons
-- Google Maps integration for accurate locations
-
-## Tech Stack
-
-- Next.js
-- React
-- Google Maps API
-- CSS Modules
+- Interactive campus map showing dorm locations
+- Detailed dorm information including room types, rates, and amenities
+- Search and filter dorms by location, room type, and price
+- Compare up to 3 dorms side by side
+- Google Maps integration for accurate locations and reviews
 
 ## Getting Started
+
+### Prerequisites
+
+- Node.js 14.x or later
+- npm or yarn
+- Google Maps API key
+
+### Installation
 
 1. Clone the repository:
 ```bash
@@ -27,30 +29,27 @@ cd AggieRoomie
 2. Install dependencies:
 ```bash
 npm install
+# or
+yarn install
 ```
 
 3. Create a `.env.local` file in the root directory and add your Google Maps API key:
 ```
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
 ```
 
 4. Run the development server:
 ```bash
 npm run dev
+# or
+yarn dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Project Structure
-
-- `/pages` - Next.js pages and API routes
-- `/styles` - CSS modules and global styles
-- `/data` - JSON data files for dorms and coordinates
-- `/public` - Static assets
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
 ## Deployment
 
-The application is configured for deployment on Vercel. Simply connect your GitHub repository to Vercel and it will automatically deploy your changes.
+The application is configured for deployment on Vercel. Simply connect your GitHub repository to Vercel and it will automatically deploy your application.
 
 ## Contributing
 
@@ -62,4 +61,10 @@ The application is configured for deployment on Vercel. Simply connect your GitH
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Texas A&M University for providing dorm information
+- Google Maps Platform for location services
+- Next.js team for the amazing framework 

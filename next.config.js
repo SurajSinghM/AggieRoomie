@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   },
   // Enable static exports for Vercel deployment
   output: 'standalone',

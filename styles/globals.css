@@ -1,7 +1,20 @@
-html,
-body {
+:root {
+  --aggie-maroon: #500000;
+  --aggie-white: #FFFFFF;
+  --aggie-gray: #F5F5F5;
+  --aggie-black: #333333;
+}
+
+* {
+  box-sizing: border-box;
   padding: 0;
   margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
@@ -11,8 +24,61 @@ a {
   text-decoration: none;
 }
 
-* {
-  box-sizing: border-box;
+.nav-link {
+  color: var(--aggie-white) !important;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.nav-link:hover {
+  opacity: 0.8;
+}
+
+.btn-primary {
+  background-color: var(--aggie-maroon) !important;
+  border-color: var(--aggie-maroon) !important;
+}
+
+.btn-primary:hover {
+  background-color: #3d0000 !important;
+  border-color: #3d0000 !important;
+}
+
+.btn-outline-primary {
+  color: var(--aggie-maroon) !important;
+  border-color: var(--aggie-maroon) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--aggie-maroon) !important;
+  color: var(--aggie-white) !important;
+}
+
+.form-control:focus {
+  border-color: var(--aggie-maroon);
+  box-shadow: 0 0 0 0.25rem rgba(80, 0, 0, 0.25);
+}
+
+.card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: var(--aggie-maroon);
+  color: var(--aggie-white);
+}
+
+.badge-primary {
+  background-color: var(--aggie-maroon);
+}
+
+.text-primary {
+  color: var(--aggie-maroon) !important;
+}
+
+.border-primary {
+  border-color: var(--aggie-maroon) !important;
 }
 
 /* Custom scrollbar */
@@ -25,7 +91,7 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #500000;
+  background: var(--aggie-maroon);
   border-radius: 4px;
 }
 
@@ -35,6 +101,6 @@ a {
 
 /* Selection color */
 ::selection {
-  background: #500000;
+  background: var(--aggie-maroon);
   color: white;
 } 
