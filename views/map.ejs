@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Map - AggieRoomie</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --aggie-maroon: #500000;
+            --aggie-white: #FFFFFF;
+            --aggie-gray: #F5F5F5;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--aggie-gray);
+            color: #333;
+        }
+
+        .navbar {
+            background-color: var(--aggie-maroon);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: var(--aggie-white) !important;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .map-container {
+            height: calc(100vh - 56px);
+            width: 100%;
+            position: relative;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .dorm-list {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-height: calc(100vh - 76px);
+            overflow-y: auto;
+            width: 300px;
+            z-index: 1000;
+        }
+
+        .dorm-item {
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .dorm-item:hover {
+            background-color: var(--aggie-gray);
+        }
+
+        .dorm-item.active {
+            background-color: var(--aggie-maroon);
+            color: white;
+        }
+
+        .info-window {
+            max-width: 300px;
+        }
+
+        .info-window h3 {
+            color: var(--aggie-maroon);
+            margin-bottom: 8px;
+        }
+
+        .info-window p {
+            margin: 4px 0;
+        }
+
+        .info-window .btn {
+            background-color: var(--aggie-maroon);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .info-window .btn:hover {
+            background-color: #800000;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">AggieRoomie</a>
+        </div>
+    </nav>
+
+    <!-- Map Container -->
+    <div class="map-container">
+        <div id="map"></div>
+        <div class="dorm-list">
+            <h4 class="mb-3">Dorms</h4>
+            <div id="dormList"></div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Google Maps JavaScript API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= process.env.GOOGLE_MAPS_API_KEY %>&callback=initMap" async defer></script>
+    
+    <!-- Custom JS -->
+    <script>
+        let map;
+        let markers = {};
+        let infoWindows = {};
+
+        function initMap() {
+            // Texas A&M University center coordinates
+            const tamuCenter = { lat: 30.6182, lng: -96.3375 };
+            
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: tamuCenter,
+                zoom: 16,
+                styles: [
+                    {
+                        "featureType": "poi",
+                        "elementType": "labels",
+                        "stylers": [{ "visibility": "off" }]
+                    }
+                ]
+            });
+
+            // Add markers for each dorm
+            const dorms = <%- JSON.stringify(dorms) %>;
+            const dormList = document.getElementById('dormList');
+            
+            dorms.forEach(dorm => {
+                // Create marker
+                const marker = new google.maps.Marker({
+                    position: dorm.location,
+                    map: map,
+                    title: dorm.name,
+                    animation: google.maps.Animation.DROP
+                });
+
+                // Create info window
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div class="info-window">
+                            <h3>${dorm.name}</h3>
+                            <p><strong>Location:</strong> ${dorm.campusLocation}</p>
+                            <p><strong>Room Types:</strong> ${dorm.roomTypes.join(', ')}</p>
+                            <p><strong>Rates:</strong> ${dorm.rates.map(rate => `${rate.roomType}: ${rate.rate}`).join(', ')}</p>
+                            <a href="/?dorm=${encodeURIComponent(dorm.name)}" class="btn">View Details</a>
+                        </div>
+                    `
+                });
+
+                // Store marker and info window
+                markers[dorm.name] = marker;
+                infoWindows[dorm.name] = infoWindow;
+
+                // Add click listener to marker
+                marker.addListener('click', () => {
+                    Object.values(infoWindows).forEach(iw => iw.close());
+                    infoWindow.open(map, marker);
+                });
+
+                // Add dorm to list
+                const dormItem = document.createElement('div');
+                dormItem.className = 'dorm-item';
+                dormItem.textContent = dorm.name;
+                dormItem.addEventListener('click', () => {
+                    // Center map on dorm
+                    map.setCenter(dorm.location);
+                    map.setZoom(17);
+                    
+                    // Open info window
+                    Object.values(infoWindows).forEach(iw => iw.close());
+                    infoWindow.open(map, marker);
+                    
+                    // Highlight in list
+                    document.querySelectorAll('.dorm-item').forEach(item => item.classList.remove('active'));
+                    dormItem.classList.add('active');
+                });
+                dormList.appendChild(dormItem);
+            });
+        }
+    </script>
+</body>
+</html> 

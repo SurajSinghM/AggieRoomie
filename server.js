@@ -1,42 +1,71 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const { Client } = require('@googlemaps/google-maps-services-js');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Initialize Google Maps client
-const googleMapsClient = new Client({});
+// Validate environment variables
+const requiredEnvVars = ['GOOGLE_MAPS_API_KEY'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+if (missingEnvVars.length > 0) {
+    console.error('Missing required environment variables:', missingEnvVars);
+    process.exit(1);
+}
+
+// Initialize Google Maps client with timeout
+const googleMapsClient = new Client({
+    timeout: 5000, // 5 second timeout
+    config: {
+        maxRetries: 3
+    }
+});
+
+// Rate limiting
+const searchLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+});
 
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-// Dorm location coordinates
+// Cache for dorm data and reviews
+let dormCache = null;
+let lastCacheUpdate = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+// Dorm locations with coordinates
 const dormLocations = {
     'Aston Hall': { lat: 30.6182, lng: -96.3375 },
     'Clements Hall': { lat: 30.6180, lng: -96.3370 },
     'Dunn Hall': { lat: 30.6185, lng: -96.3378 },
     'Fowler Hall': { lat: 30.6178, lng: -96.3368 },
-    'Hart Hall': { lat: 30.6175, lng: -96.3365 },
-    'Hobby Hall': { lat: 30.6172, lng: -96.3362 },
-    'Hullabaloo Hall': { lat: 30.61716253293003, lng: 30.61716253293003 },
+    'Hart Hall': { lat: 30.6179, lng: -96.3369 },
+    'Hobby Hall': { lat: 30.6177, lng: -96.3367 },
+    'Hullabaloo Hall': { lat: 30.6188, lng: -96.3382 },
     'Krueger Hall': { lat: 30.6186, lng: -96.3380 },
-    'Lechner Hall': { lat: 30.6170, lng: -96.3360 },
+    'Lechner Hall': { lat: 30.6175, lng: -96.3365 },
     'Mosher Hall': { lat: 30.6184, lng: -96.3376 },
     'Moses Hall': { lat: 30.6176, lng: -96.3366 },
-    'Rudder Hall': { lat: 30.6174, lng: -96.3364 }
+    'Rudder Hall': { lat: 30.6174, lng: -96.3364 },
+    'Underwood Hall': { lat: 30.6173, lng: -96.3363 }
 };
 
 async function getGoogleReviews(dormName) {
     try {
+        // Sanitize dorm name
+        const sanitizedDormName = dormName.replace(/[^a-zA-Z0-9\s]/g, '');
+        
         const response = await googleMapsClient.textSearch({
             params: {
-                query: `${dormName} Texas A&M University College Station`,
+                query: `${sanitizedDormName} Texas A&M University College Station`,
                 key: process.env.GOOGLE_MAPS_API_KEY
             }
         });
@@ -44,108 +73,328 @@ async function getGoogleReviews(dormName) {
         if (response.data.results && response.data.results.length > 0) {
             const place = response.data.results[0];
             return {
-                rating: place.rating,
-                reviews: place.user_ratings_total
+                rating: place.rating || 0,
+                reviews: place.user_ratings_total || 0
             };
         }
         return null;
     } catch (error) {
+        if (error.response?.status === 429) {
+            console.error(`Rate limit exceeded for ${dormName}`);
+            return null;
+        }
         console.error(`Error fetching reviews for ${dormName}:`, error);
         return null;
     }
 }
 
-function loadDorms() {
+async function loadDorms() {
     try {
-        const data = JSON.parse(fs.readFileSync('data/dorms.json', 'utf8'));
-        return data.dorms;
+        // Check cache first
+        if (dormCache && lastCacheUpdate && (Date.now() - lastCacheUpdate < CACHE_DURATION)) {
+            console.log('Returning cached dorm data');
+            return dormCache;
+        }
+
+        console.log('Loading dorm data from file...');
+        const data = await fs.readFile('data/dorms.json', 'utf8');
+        const parsedData = JSON.parse(data);
+        
+        // Validate dorm data structure
+        if (!parsedData.dorms || !Array.isArray(parsedData.dorms)) {
+            throw new Error('Invalid dorm data structure');
+        }
+
+        console.log('Validating dorm data...');
+        const dorms = parsedData.dorms.map(dorm => {
+            // Validate required fields
+            if (!dorm.name || !dorm.location || !dorm.roomTypes || !dorm.rates) {
+                console.warn('Invalid dorm data:', dorm);
+                return null;
+            }
+
+            // Ensure rates are properly formatted
+            const validatedRates = dorm.rates.map(rate => {
+                if (!rate.type || !rate.rate) {
+                    console.warn('Invalid rate data:', rate);
+                    return null;
+                }
+                return rate;
+            }).filter(rate => rate !== null);
+
+            // Ensure room types are properly formatted
+            const validatedRoomTypes = dorm.roomTypes.filter(type => typeof type === 'string');
+
+            // Ensure location is properly formatted
+            const location = dorm.location.trim();
+
+            console.log(`Processing dorm ${dorm.name}:`, {
+                originalLocation: dorm.location,
+                processedLocation: location,
+                coordinates: dormLocations[dorm.name]
+            });
+
+            return {
+                ...dorm,
+                rates: validatedRates,
+                roomTypes: validatedRoomTypes,
+                location: location
+            };
+        }).filter(dorm => dorm !== null);
+
+        console.log(`Successfully loaded ${dorms.length} dorms`);
+
+        // Update cache
+        dormCache = dorms;
+        lastCacheUpdate = Date.now();
+        
+        return dorms;
     } catch (error) {
         console.error('Error loading dorms:', error);
-        return [];
+        throw error;
     }
 }
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy' });
+});
 
 // Routes
 app.get('/', (req, res) => {
     res.render('index');
 });
 
-app.post('/search', async (req, res) => {
+app.get('/map', async (req, res) => {
+    try {
+        const dorms = await loadDorms();
+        res.render('map', { dorms });
+    } catch (error) {
+        console.error('Error loading map:', error);
+        res.status(500).render('error', { message: 'Error loading map data' });
+    }
+});
+
+app.post('/search', searchLimiter, async (req, res) => {
     try {
         const { roomType, maxBudget, location } = req.body;
         
+        console.log('Search request received:', { roomType, maxBudget, location });
+        
+        // Input validation
         if (!roomType || !maxBudget || !location) {
-            return res.status(400).json({ error: 'All fields are required' });
+            console.log('Missing required fields:', { roomType, maxBudget, location });
+            return res.status(400).json({ 
+                error: 'Missing required fields',
+                details: {
+                    roomType: !roomType ? 'Room type is required' : null,
+                    maxBudget: !maxBudget ? 'Budget is required' : null,
+                    location: !location ? 'Location is required' : null
+                }
+            });
         }
 
-        const dorms = loadDorms();
-        const filteredDorms = dorms.filter(dorm => {
-            // Location matching
-            const locationMatch = !location || dorm.location.toLowerCase().includes(location.toLowerCase());
-            
-            // Room type matching
-            const roomTypeMatch = dorm.roomTypes.some(type => 
-                type.toLowerCase().includes(roomType.toLowerCase())
-            );
+        // Validate maxBudget is a positive number
+        if (isNaN(maxBudget) || maxBudget <= 0) {
+            console.log('Invalid budget:', maxBudget);
+            return res.status(400).json({ 
+                error: 'Invalid budget',
+                details: 'Budget must be a positive number'
+            });
+        }
 
-            return locationMatch && roomTypeMatch;
+        // Load and validate dorms data
+        const dorms = await loadDorms();
+        console.log('Total dorms loaded:', dorms.length);
+        
+        if (!Array.isArray(dorms) || dorms.length === 0) {
+            console.error('No dorms data available');
+            return res.status(500).json({ 
+                error: 'Unable to load dorm data',
+                details: 'Please try again later'
+            });
+        }
+
+        // Filter dorms
+        const filteredDorms = dorms.filter(dorm => {
+            if (!dorm || !dorm.roomTypes) {
+                console.warn('Invalid dorm data:', dorm);
+                return false;
+            }
+
+            // Location matching
+            const locationMatch = !location || 
+                (typeof dorm.location === 'string' && 
+                 dorm.location.toLowerCase().trim() === location.toLowerCase().trim());
+            
+            console.log(`Location matching for ${dorm.name}:`, {
+                dormLocation: dorm.location,
+                searchLocation: location,
+                locationMatch,
+                dormLocationLower: dorm.location.toLowerCase().trim(),
+                searchLocationLower: location.toLowerCase().trim()
+            });
+
+            // Room type matching
+            const roomTypeMatch = dorm.roomTypes.some(type => {
+                const normalizedType = type.toLowerCase();
+                const normalizedSearch = roomType.toLowerCase();
+                
+                // Map search terms to room types
+                if (normalizedSearch.includes('2') || normalizedSearch.includes('two') || normalizedSearch === 'double') {
+                    return normalizedType === 'double';
+                }
+                if (normalizedSearch.includes('1') || normalizedSearch.includes('one') || normalizedSearch === 'single') {
+                    return normalizedType === 'single';
+                }
+                if (normalizedSearch === 'suite') {
+                    return normalizedType === 'suite' || normalizedType === 'single suite';
+                }
+                return normalizedType === normalizedSearch;
+            });
+
+            // Budget matching
+            const budgetMatch = dorm.rates.some(rate => {
+                // Remove $ and commas, then convert to number
+                const rateValue = parseInt(rate.rate.replace(/[$,]/g, ''));
+                const matches = rateValue <= maxBudget;
+                console.log(`Dorm ${dorm.name} rate ${rateValue} vs budget ${maxBudget}: ${matches}`);
+                return matches;
+            });
+
+            console.log(`Dorm ${dorm.name} matches:`, {
+                locationMatch,
+                roomTypeMatch,
+                budgetMatch,
+                roomTypes: dorm.roomTypes,
+                rates: dorm.rates
+            });
+
+            return locationMatch && roomTypeMatch && budgetMatch;
         });
 
-        // Get Google Reviews for each dorm
-        const dormsWithReviews = await Promise.all(filteredDorms.map(async dorm => {
-            const reviews = await getGoogleReviews(dorm.name);
-            return {
-                ...dorm,
-                googleReview: reviews
-            };
-        }));
+        console.log('Filtered dorms count:', filteredDorms.length);
+
+        if (filteredDorms.length === 0) {
+            return res.json({ 
+                dorms: [],
+                message: `No dorms found matching your criteria. Try adjusting your room type, budget, or location.`
+            });
+        }
+
+        // Get Google Reviews for each dorm in parallel
+        const dormsWithReviews = await Promise.all(
+            filteredDorms.map(async dorm => {
+                try {
+                    const reviews = await getGoogleReviews(dorm.name);
+                    return {
+                        ...dorm,
+                        googleReview: reviews
+                    };
+                } catch (error) {
+                    console.error(`Error fetching reviews for ${dorm.name}:`, error);
+                    return {
+                        ...dorm,
+                        googleReview: null
+                    };
+                }
+            })
+        );
 
         // Calculate scores and filter by budget
         const scoredDorms = dormsWithReviews
             .map(dorm => {
-                const matchedRates = dorm.rates.filter(rate => {
-                    const rateValue = parseInt(rate.rate.replace(/[^0-9]/g, ''));
-                    return rateValue <= maxBudget;
-                });
+                try {
+                    const matchedRates = dorm.rates.filter(rate => {
+                        const rateValue = parseInt(rate.rate.replace(/[^0-9]/g, ''));
+                        return rateValue <= maxBudget;
+                    });
 
-                if (matchedRates.length === 0) return null;
+                    if (matchedRates.length === 0) return null;
 
-                // Calculate score based on room type match and price
-                let score = 0;
-                
-                // Room type score (2 points max)
-                const roomTypeScore = dorm.roomTypes.some(type => 
-                    type.toLowerCase() === roomType.toLowerCase()
-                ) ? 2 : 1;
-                
-                // Price score (2 points max)
-                const lowestRate = Math.min(...matchedRates.map(rate => 
-                    parseInt(rate.rate.replace(/[^0-9]/g, ''))
-                ));
-                const priceScore = 2 * (1 - (lowestRate / maxBudget));
-                
-                // Location score (1 point)
-                const locationScore = dorm.location.toLowerCase() === location.toLowerCase() ? 1 : 0;
-                
-                // Total score (5 points max)
-                score = roomTypeScore + priceScore + locationScore;
+                    // Calculate score based on room type match and price
+                    let score = 0;
+                    
+                    // Room type score (3 points max)
+                    const roomTypeScore = dorm.roomTypes.some(type => {
+                        const normalizedType = type.toLowerCase();
+                        const normalizedSearch = roomType.toLowerCase();
+                        
+                        if (normalizedSearch.includes('2') || normalizedSearch.includes('two') || normalizedSearch === 'double') {
+                            return normalizedType === 'double';
+                        }
+                        if (normalizedSearch.includes('1') || normalizedSearch.includes('one') || normalizedSearch === 'single') {
+                            return normalizedType === 'single';
+                        }
+                        if (normalizedSearch === 'suite') {
+                            return normalizedType === 'suite' || normalizedType === 'single suite';
+                        }
+                        return normalizedType === normalizedSearch;
+                    }) ? 3 : 1;
+                    
+                    // Price score (2 points max)
+                    const lowestRate = Math.min(...matchedRates.map(rate => 
+                        parseInt(rate.rate.replace(/[^0-9]/g, ''))
+                    ));
+                    const priceScore = 2 * (1 - (lowestRate / maxBudget));
+                    
+                    // Total score (5 points max)
+                    score = roomTypeScore + priceScore;
 
-                return {
-                    ...dorm,
-                    score,
-                    matchedRates
-                };
+                    console.log(`Dorm ${dorm.name} scored:`, {
+                        roomTypeScore,
+                        priceScore,
+                        totalScore: score,
+                        matchedRates
+                    });
+
+                    return {
+                        ...dorm,
+                        score,
+                        matchedRates
+                    };
+                } catch (error) {
+                    console.error(`Error processing dorm ${dorm.name}:`, error);
+                    return null;
+                }
             })
             .filter(dorm => dorm !== null)
             .sort((a, b) => b.score - a.score);
 
+        console.log('Final scored dorms count:', scoredDorms.length);
+
+        if (scoredDorms.length === 0) {
+            return res.json({ 
+                dorms: [],
+                message: 'No dorms found within your budget'
+            });
+        }
+
         res.json({ dorms: scoredDorms });
     } catch (error) {
         console.error('Error processing search:', error);
-        res.status(500).json({ error: 'An error occurred while processing your search' });
+        res.status(500).json({ 
+            error: 'An error occurred while processing your search',
+            details: process.env.NODE_ENV === 'development' ? error.message : 'Please try again later'
+        });
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-}); 
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        error: 'Internal Server Error',
+        details: process.env.NODE_ENV === 'development' ? err.message : 'Please try again later'
+    });
+});
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+    });
+}
+
+// Export the Express API
+module.exports = app; 
