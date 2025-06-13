@@ -6,6 +6,8 @@
     <title>AggieRoomie - Find Your Perfect Dorm</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <style>
         :root {
@@ -108,6 +110,17 @@
         .dorm-rating {
             color: #ffc107;
             font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dorm-rating .stars {
+            display: inline-block;
+        }
+        
+        .dorm-rating .review-count {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
         }
 
         .dorm-price {
@@ -247,12 +260,12 @@
 
             const formData = {
                 roomType: document.getElementById('roomType').value,
-                budget: document.getElementById('budget').value,
+                maxBudget: parseInt(document.getElementById('budget').value),
                 location: document.getElementById('location').value
             };
 
             try {
-                const response = await fetch('/rank-dorms', {
+                const response = await fetch('/search', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -260,60 +273,88 @@
                     body: JSON.stringify(formData)
                 });
 
-                const data = await response.json();
-
                 if (!response.ok) {
-                    throw new Error(data.error || 'An error occurred while fetching dorm rankings');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                displayResults(data.rankedDorms);
-            } catch (error) {
-                document.getElementById('error').textContent = error.message;
-                document.getElementById('error').style.display = 'block';
-            } finally {
+                const data = await response.json();
+                
+                // Hide loading spinner
                 document.getElementById('loading').style.display = 'none';
+
+                if (data.error) {
+                    document.getElementById('error').textContent = data.error;
+                    document.getElementById('error').style.display = 'block';
+                    return;
+                }
+
+                if (!data.dorms || data.dorms.length === 0) {
+                    document.getElementById('dormResults').innerHTML = `
+                        <div class="col-12">
+                            <div class="no-results">
+                                <h3>No matching dorms found</h3>
+                                <p>Try adjusting your search criteria</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Display results
+                const resultsHtml = data.dorms.map(dorm => `
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="dorm-card">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h3 class="dorm-name">${dorm.name}</h3>
+                                <span class="score-badge">Match Score: ${dorm.score.toFixed(1)}</span>
+                            </div>
+                            ${dorm.googleReview ? `
+                            <div class="dorm-rating">
+                                <div class="stars">
+                                    ${Array(5).fill().map((_, i) => {
+                                        const rating = dorm.googleReview.rating;
+                                        if (i < Math.floor(rating)) {
+                                            return '<i class="fas fa-star"></i>';
+                                        } else if (i < Math.ceil(rating) && rating % 1 !== 0) {
+                                            return '<i class="fas fa-star-half-alt"></i>';
+                                        } else {
+                                            return '<i class="far fa-star"></i>';
+                                        }
+                                    }).join('')}
+                                </div>
+                                <span class="review-count">(${dorm.googleReview.rating.toFixed(1)} · ${dorm.googleReview.reviews} reviews)</span>
+                            </div>
+                            ` : ''}
+                            <div class="dorm-info">
+                                <p><strong>Location:</strong> ${dorm.location}</p>
+                                <p><strong>Room Types:</strong> ${dorm.roomTypes.join(', ')}</p>
+                                <p><strong>Available Rates:</strong></p>
+                                <ul>
+                                    ${dorm.matchedRates.map(rate => `
+                                        <li>${rate.roomType}: ${rate.rate}</li>
+                                    `).join('')}
+                                </ul>
+                                ${dorm.buildingInfo ? `
+                                    <p><strong>Building Info:</strong></p>
+                                    <ul>
+                                        ${Object.entries(dorm.buildingInfo).map(([key, value]) => `
+                                            <li>${key}: ${value}</li>
+                                        `).join('')}
+                                    </ul>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('dormResults').innerHTML = resultsHtml;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').textContent = 'An error occurred while searching for dorms. Please try again.';
+                document.getElementById('error').style.display = 'block';
             }
         });
-
-        function displayResults(dorms) {
-            const resultsContainer = document.getElementById('dormResults');
-            
-            if (!dorms || dorms.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="col-12">
-                        <div class="no-results">
-                            <h3>No matching dorms found</h3>
-                            <p>Try adjusting your search criteria</p>
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-
-            resultsContainer.innerHTML = dorms.map(dorm => `
-                <div class="col-md-4">
-                    <div class="dorm-card">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h3 class="dorm-name">${dorm.name}</h3>
-                            <span class="score-badge">Score: ${dorm.score}</span>
-                        </div>
-                        <div class="dorm-rating mb-2">
-                            ${'★'.repeat(Math.floor(dorm.rating))}${'☆'.repeat(5-Math.floor(dorm.rating))}
-                            <span class="text-muted">(${dorm.rating})</span>
-                        </div>
-                        <p class="dorm-price mb-3">
-                            $${dorm.priceRange.min.toLocaleString()} - $${dorm.priceRange.max.toLocaleString()}
-                        </p>
-                        <p class="mb-3">${dorm.description}</p>
-                        <div class="dorm-amenities">
-                            ${dorm.amenities.map(amenity => `
-                                <span class="amenity-badge">${amenity}</span>
-                            `).join('')}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
     </script>
 </body>
 </html> 
