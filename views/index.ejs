@@ -182,6 +182,46 @@
             font-size: 0.875rem;
             font-weight: 500;
         }
+
+        .score-container {
+            text-align: right;
+        }
+        
+        .score-details {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+        
+        .score-details small {
+            margin-bottom: 0.2rem;
+        }
+        
+        .badge {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .bg-success {
+            background-color: #28a745 !important;
+        }
+        
+        .bg-primary {
+            background-color: #007bff !important;
+        }
+        
+        .bg-warning {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+        }
+        
+        .bg-danger {
+            background-color: #dc3545 !important;
+        }
     </style>
 </head>
 <body>
@@ -337,7 +377,9 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <h5 class="card-title mb-0">${dorm.name}</h5>
-                                    <span class="badge bg-primary">Match Score: ${dorm.score.toFixed(1)}</span>
+                                    <span class="badge ${dorm.score >= 8 ? 'bg-success' : dorm.score >= 6 ? 'bg-primary' : dorm.score >= 4 ? 'bg-warning' : 'bg-danger'}">
+                                        Match Score: ${dorm.score.toFixed(1)}/10
+                                    </span>
                                 </div>
 
                                 ${dorm.googleReview ? `

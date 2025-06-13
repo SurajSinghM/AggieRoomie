@@ -215,65 +215,96 @@ app.post('/search', searchLimiter, async (req, res) => {
             });
         }
 
-        // Filter dorms
-        const filteredDorms = dorms.filter(dorm => {
-            if (!dorm || !dorm.roomTypes) {
-                console.warn('Invalid dorm data:', dorm);
-                return false;
-            }
+        // Filter dorms based on criteria
+        const filteredDorms = dorms
+            .map(dorm => {
+                // Get rates for the specific room type
+                const matchedRates = dorm.rates.filter(rate => {
+                    const rateType = rate.type.toLowerCase();
+                    const searchType = roomType.toLowerCase();
+                    
+                    // Handle special cases
+                    if (searchType.includes('2') || searchType.includes('two') || searchType === 'double') {
+                        return rateType === 'double';
+                    }
+                    if (searchType.includes('1') || searchType.includes('one') || searchType === 'single') {
+                        return rateType === 'single';
+                    }
+                    if (searchType === 'suite') {
+                        return rateType === 'suite' || rateType === 'single suite';
+                    }
+                    return rateType === searchType;
+                });
 
-            // Location matching
-            const locationMatch = !location || 
-                (typeof dorm.location === 'string' && 
-                 dorm.location.toLowerCase().trim() === location.toLowerCase().trim());
-            
-            console.log(`Location matching for ${dorm.name}:`, {
-                dormLocation: dorm.location,
-                searchLocation: location,
-                locationMatch,
-                dormLocationLower: dorm.location.toLowerCase().trim(),
-                searchLocationLower: location.toLowerCase().trim()
-            });
+                // If no matching rates, return null
+                if (matchedRates.length === 0) return null;
 
-            // Room type matching
-            const roomTypeMatch = dorm.roomTypes.some(type => {
-                const normalizedType = type.toLowerCase();
-                const normalizedSearch = roomType.toLowerCase();
+                // Calculate score based on multiple factors
+                let score = 0;
                 
-                // Map search terms to room types
-                if (normalizedSearch.includes('2') || normalizedSearch.includes('two') || normalizedSearch === 'double') {
-                    return normalizedType === 'double';
-                }
-                if (normalizedSearch.includes('1') || normalizedSearch.includes('one') || normalizedSearch === 'single') {
-                    return normalizedType === 'single';
-                }
-                if (normalizedSearch === 'suite') {
-                    return normalizedType === 'suite' || normalizedType === 'single suite';
-                }
-                return normalizedType === normalizedSearch;
-            });
+                // Room type match (4 points max)
+                const roomTypeScore = dorm.roomTypes.some(type => {
+                    const normalizedType = type.toLowerCase();
+                    const normalizedSearch = roomType.toLowerCase();
+                    
+                    if (normalizedSearch.includes('2') || normalizedSearch.includes('two') || normalizedSearch === 'double') {
+                        return normalizedType === 'double';
+                    }
+                    if (normalizedSearch.includes('1') || normalizedSearch.includes('one') || normalizedSearch === 'single') {
+                        return normalizedType === 'single';
+                    }
+                    if (normalizedSearch === 'suite') {
+                        return normalizedType === 'suite' || normalizedType === 'single suite';
+                    }
+                    return normalizedType === normalizedSearch;
+                }) ? 4 : 0;
+                
+                // Price score (3 points max)
+                const lowestRate = Math.min(...matchedRates.map(rate => 
+                    parseInt(rate.rate.replace(/[$,]/g, ''))
+                ));
+                const priceScore = 3 * (1 - (lowestRate / maxBudget));
+                
+                // Location score (1 point max)
+                const locationScore = dorm.location.toLowerCase().trim() === location.toLowerCase().trim() ? 1 : 0;
+                
+                // Building quality score (1 point max)
+                const yearBuilt = parseInt(dorm.buildingInfo.yearBuilt);
+                const buildingScore = yearBuilt >= 2010 ? 1 : 0;
 
-            // Budget matching
-            const budgetMatch = dorm.rates.some(rate => {
-                // Remove $ and commas, then convert to number
-                const rateValue = parseInt(rate.rate.replace(/[$,]/g, ''));
-                const matches = rateValue <= maxBudget;
-                console.log(`Dorm ${dorm.name} rate ${rateValue} vs budget ${maxBudget}: ${matches}`);
-                return matches;
-            });
+                // Google review score (2 points max)
+                const reviewScore = dorm.googleReview ? (dorm.googleReview.rating / 5) * 2 : 0;
+                
+                // Total score (10 points max)
+                score = roomTypeScore + priceScore + locationScore + buildingScore + reviewScore;
 
-            console.log(`Dorm ${dorm.name} matches:`, {
-                locationMatch,
-                roomTypeMatch,
-                budgetMatch,
-                roomTypes: dorm.roomTypes,
-                rates: dorm.rates
-            });
+                console.log(`Dorm ${dorm.name} scored:`, {
+                    roomTypeScore,
+                    priceScore,
+                    locationScore,
+                    buildingScore,
+                    reviewScore,
+                    totalScore: score,
+                    matchedRates
+                });
 
-            return locationMatch && roomTypeMatch && budgetMatch;
-        });
+                return {
+                    ...dorm,
+                    score,
+                    scoreDetails: {
+                        roomTypeScore,
+                        priceScore,
+                        locationScore,
+                        buildingScore,
+                        reviewScore
+                    },
+                    matchedRates
+                };
+            })
+            .filter(dorm => dorm !== null) // Remove null entries
+            .sort((a, b) => b.score - a.score); // Sort by score in descending order
 
-        console.log('Filtered dorms count:', filteredDorms.length);
+        console.log(`Found ${filteredDorms.length} matching dorms`);
 
         if (filteredDorms.length === 0) {
             return res.json({ 
@@ -282,95 +313,7 @@ app.post('/search', searchLimiter, async (req, res) => {
             });
         }
 
-        // Get Google Reviews for each dorm in parallel
-        const dormsWithReviews = await Promise.all(
-            filteredDorms.map(async dorm => {
-                try {
-                    const reviews = await getGoogleReviews(dorm.name);
-                    return {
-                        ...dorm,
-                        googleReview: reviews
-                    };
-                } catch (error) {
-                    console.error(`Error fetching reviews for ${dorm.name}:`, error);
-                    return {
-                        ...dorm,
-                        googleReview: null
-                    };
-                }
-            })
-        );
-
-        // Calculate scores and filter by budget
-        const scoredDorms = dormsWithReviews
-            .map(dorm => {
-                try {
-                    const matchedRates = dorm.rates.filter(rate => {
-                        const rateValue = parseInt(rate.rate.replace(/[^0-9]/g, ''));
-                        return rateValue <= maxBudget;
-                    });
-
-                    if (matchedRates.length === 0) return null;
-
-                    // Calculate score based on room type match and price
-                    let score = 0;
-                    
-                    // Room type score (3 points max)
-                    const roomTypeScore = dorm.roomTypes.some(type => {
-                        const normalizedType = type.toLowerCase();
-                        const normalizedSearch = roomType.toLowerCase();
-                        
-                        if (normalizedSearch.includes('2') || normalizedSearch.includes('two') || normalizedSearch === 'double') {
-                            return normalizedType === 'double';
-                        }
-                        if (normalizedSearch.includes('1') || normalizedSearch.includes('one') || normalizedSearch === 'single') {
-                            return normalizedType === 'single';
-                        }
-                        if (normalizedSearch === 'suite') {
-                            return normalizedType === 'suite' || normalizedType === 'single suite';
-                        }
-                        return normalizedType === normalizedSearch;
-                    }) ? 3 : 1;
-                    
-                    // Price score (2 points max)
-                    const lowestRate = Math.min(...matchedRates.map(rate => 
-                        parseInt(rate.rate.replace(/[^0-9]/g, ''))
-                    ));
-                    const priceScore = 2 * (1 - (lowestRate / maxBudget));
-                    
-                    // Total score (5 points max)
-                    score = roomTypeScore + priceScore;
-
-                    console.log(`Dorm ${dorm.name} scored:`, {
-                        roomTypeScore,
-                        priceScore,
-                        totalScore: score,
-                        matchedRates
-                    });
-
-                    return {
-                        ...dorm,
-                        score,
-                        matchedRates
-                    };
-                } catch (error) {
-                    console.error(`Error processing dorm ${dorm.name}:`, error);
-                    return null;
-                }
-            })
-            .filter(dorm => dorm !== null)
-            .sort((a, b) => b.score - a.score);
-
-        console.log('Final scored dorms count:', scoredDorms.length);
-
-        if (scoredDorms.length === 0) {
-            return res.json({ 
-                dorms: [],
-                message: 'No dorms found within your budget'
-            });
-        }
-
-        res.json({ dorms: scoredDorms });
+        res.json({ dorms: filteredDorms });
     } catch (error) {
         console.error('Error processing search:', error);
         res.status(500).json({ 
