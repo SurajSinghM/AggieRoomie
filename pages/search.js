@@ -481,7 +481,7 @@ export default function Search() {
       </main>
 
       <footer className={styles.footer}>
-        <p>© 2024 AggieRoomie. All rights reserved.</p>
+        <p>© 2025 AggieRoomie. Suraj Singh M</p>
       </footer>
     </div>
   );
