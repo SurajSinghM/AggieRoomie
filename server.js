@@ -60,30 +60,83 @@ const dormLocations = {
 
 async function getGoogleReviews(dormName) {
     try {
-        // Sanitize dorm name
-        const sanitizedDormName = dormName.replace(/[^a-zA-Z0-9\s]/g, '');
+        console.log(`Searching for reviews for: ${dormName}`);
         
-        const response = await googleMapsClient.textSearch({
+        // First, search for the place using Places API with more specific parameters
+        const searchResponse = await googleMapsClient.textSearch({
             params: {
-                query: `${sanitizedDormName} Texas A&M University College Station`,
-                key: process.env.GOOGLE_MAPS_API_KEY
+                query: `${dormName} Texas A&M`,
+                key: process.env.GOOGLE_MAPS_API_KEY,
+                location: '30.6280,-96.3344', // Texas A&M University coordinates
+                radius: '2000' // 2km radius
             }
         });
 
-        if (response.data.results && response.data.results.length > 0) {
-            const place = response.data.results[0];
-            return {
-                rating: place.rating || 0,
-                reviews: place.user_ratings_total || 0
-            };
-        }
-        return null;
-    } catch (error) {
-        if (error.response?.status === 429) {
-            console.error(`Rate limit exceeded for ${dormName}`);
+        console.log('Search response:', JSON.stringify(searchResponse.data, null, 2));
+
+        if (!searchResponse.data.results || searchResponse.data.results.length === 0) {
+            console.log(`No places found for ${dormName}`);
             return null;
         }
-        console.error(`Error fetching reviews for ${dormName}:`, error);
+
+        // Get the first result's place_id
+        const placeId = searchResponse.data.results[0].place_id;
+        console.log(`Found place_id: ${placeId} for ${dormName}`);
+
+        // Get place details including reviews
+        const detailsResponse = await googleMapsClient.placeDetails({
+            params: {
+                place_id: placeId,
+                key: process.env.GOOGLE_MAPS_API_KEY,
+                fields: ['rating', 'user_ratings_total', 'reviews', 'name', 'formatted_address', 'types']
+            }
+        });
+
+        console.log('Details response:', JSON.stringify(detailsResponse.data, null, 2));
+
+        const placeDetails = detailsResponse.data.result;
+
+        if (!placeDetails) {
+            console.log(`No details found for ${dormName}`);
+            return null;
+        }
+
+        // Verify the place name matches our dorm name
+        const placeName = placeDetails.name.toLowerCase();
+        const searchName = dormName.toLowerCase();
+        
+        console.log(`Comparing names: "${placeName}" vs "${searchName}"`);
+        
+        // More lenient name matching
+        const nameMatch = placeName.includes(searchName) || 
+                         searchName.includes(placeName) ||
+                         placeName.includes('dorm') ||
+                         placeName.includes('hall') ||
+                         placeName.includes('residence');
+
+        if (!nameMatch) {
+            console.log(`Place name mismatch: ${placeName} vs ${searchName}`);
+            return null;
+        }
+
+        // Ensure we have valid rating data
+        if (!placeDetails.rating || !placeDetails.user_ratings_total) {
+            console.log(`Missing rating data for ${dormName}`);
+            return null;
+        }
+
+        const reviewData = {
+            rating: parseFloat(placeDetails.rating),
+            reviews: parseInt(placeDetails.user_ratings_total)
+        };
+
+        console.log(`Returning review data for ${dormName}:`, reviewData);
+        return reviewData;
+    } catch (error) {
+        console.error(`Error fetching Google reviews for ${dormName}:`, error);
+        if (error.response) {
+            console.error('Error response:', error.response.data);
+        }
         return null;
     }
 }
@@ -313,7 +366,27 @@ app.post('/search', searchLimiter, async (req, res) => {
             });
         }
 
-        res.json({ dorms: filteredDorms });
+        const dormsWithReviews = await Promise.all(
+            filteredDorms.map(async dorm => {
+                try {
+                    console.log(`Fetching reviews for ${dorm.name}`);
+                    const reviews = await getGoogleReviews(dorm.name);
+                    console.log(`Reviews for ${dorm.name}:`, reviews);
+                    return {
+                        ...dorm,
+                        googleReview: reviews
+                    };
+                } catch (error) {
+                    console.error(`Error fetching reviews for ${dorm.name}:`, error);
+                    return {
+                        ...dorm,
+                        googleReview: null
+                    };
+                }
+            })
+        );
+
+        res.json({ dorms: dormsWithReviews });
     } catch (error) {
         console.error('Error processing search:', error);
         res.status(500).json({ 
