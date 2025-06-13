@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { Client } = require('@googlemaps/google-maps-services-js');
 const rateLimit = require('express-rate-limit');
+const dormcords = require('./data/dormcords.json');
 require('dotenv').config();
 
 // Initialize Google Maps client with timeout
@@ -40,30 +41,6 @@ app.set('view engine', 'ejs');
 let dormCache = null;
 let lastCacheUpdate = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-// Dorm locations with verified coordinates (updated with more precise values)
-const dormLocations = {
-    'Appelt Hall': { lat: 30.6170, lng: -96.3360 },
-    'Aston Hall': { lat: 30.6182, lng: -96.3375 },
-    'Clements Hall': { lat: 30.6180, lng: -96.3370 },
-    'Dunn Hall': { lat: 30.6185, lng: -96.3378 },
-    'Eppright Hall': { lat: 30.6169, lng: -96.3359 },
-    'Fowler Hall': { lat: 30.6178, lng: -96.3368 },
-    'Haas Hall': { lat: 30.6172, lng: -96.3362 },
-    'Hart Hall': { lat: 30.6179, lng: -96.3369 },
-    'Hobby Hall': { lat: 30.6177, lng: -96.3367 },
-    'Hullabaloo Hall': { lat: 30.6188, lng: -96.3382 },
-    'Krueger Hall': { lat: 30.6186, lng: -96.3380 },
-    'Lechner Hall': { lat: 30.6175, lng: -96.3365 },
-    'McFadden Hall': { lat: 30.6171, lng: -96.3361 },
-    'Mosher Hall': { lat: 30.6184, lng: -96.3376 },
-    'Moses Hall': { lat: 30.6176, lng: -96.3366 },
-    'Neeley Hall': { lat: 30.6183, lng: -96.3377 },
-    'Rudder Hall': { lat: 30.6174, lng: -96.3364 },
-    'Underwood Hall': { lat: 30.6173, lng: -96.3363 },
-    'Walton Hall': { lat: 30.6181, lng: -96.3374 },
-    'Wells Hall': { lat: 30.6168, lng: -96.3358 }  // Added Wells Hall
-};
 
 async function getGoogleReviews(dormName) {
     try {
@@ -223,59 +200,20 @@ async function loadDorms() {
             throw new Error('Invalid dorm data structure');
         }
 
-        console.log('Validating dorm data...');
-        const dorms = parsedData.dorms.map(dorm => {
-            // Validate required fields
-            if (!dorm.name || !dorm.location || !dorm.roomTypes || !dorm.rates) {
-                console.warn('Invalid dorm data:', dorm);
-                return null;
+        // Add coordinates from dormcords.json
+        parsedData.dorms.forEach(dorm => {
+            if (dormcords[dorm.name]) {
+                dorm.coordinates = dormcords[dorm.name];
             }
-
-            // Ensure rates are properly formatted
-            const validatedRates = dorm.rates.map(rate => {
-                if (!rate.type || !rate.rate) {
-                    console.warn('Invalid rate data:', rate);
-                    return null;
-                }
-                return rate;
-            }).filter(rate => rate !== null);
-
-            // Ensure room types are properly formatted
-            const validatedRoomTypes = dorm.roomTypes.filter(type => typeof type === 'string');
-
-            // Ensure location is properly formatted
-            const location = dorm.location.trim();
-
-            // Get coordinates for the dorm
-            const coordinates = dormLocations[dorm.name];
-            if (!coordinates) {
-                console.warn(`No coordinates found for ${dorm.name}`);
-            }
-
-            console.log(`Processing dorm ${dorm.name}:`, {
-                originalLocation: dorm.location,
-                processedLocation: location,
-                coordinates: coordinates
-            });
-
-            return {
-                ...dorm,
-                rates: validatedRates,
-                roomTypes: validatedRoomTypes,
-                location: location,
-                coordinates: coordinates || { lat: 30.6280, lng: -96.3344 } // Default to TAMU center if no coordinates found
-            };
-        }).filter(dorm => dorm !== null);
-
-        console.log(`Successfully loaded ${dorms.length} dorms`);
+        });
 
         // Update cache
-        dormCache = dorms;
+        dormCache = parsedData;
         lastCacheUpdate = Date.now();
         
-        return dorms;
+        return parsedData;
     } catch (error) {
-        console.error('Error loading dorms:', error);
+        console.error('Error loading dorm data:', error);
         throw error;
     }
 }
@@ -396,137 +334,6 @@ async function getDormLocation(dormName) {
     }
 }
 
-// Function to verify dorm locations with more precise search
-async function verifyDormLocation(dormName, coordinates) {
-    try {
-        console.log(`\n=== Verifying location for ${dormName} ===`);
-        
-        // Search queries specific to Texas A&M dorms
-        const searchQueries = [
-            `${dormName} Hall Texas A&M University College Station TX 77843`,
-            `${dormName} Residence Hall Texas A&M University`,
-            `${dormName} Hall TAMU`,
-            `${dormName} Hall College Station TX`
-        ];
-
-        let bestResult = null;
-        let bestScore = 0;
-
-        for (const query of searchQueries) {
-            console.log(`Trying search query: ${query}`);
-            const searchResponse = await googleMapsClient.textSearch({
-                params: {
-                    query: query,
-                    key: process.env.GOOGLE_MAPS_API_KEY,
-                    location: '30.6180,-96.3370', // Center of campus
-                    radius: '1000' // 1km radius for more precise results
-                }
-            });
-
-            if (searchResponse.data.results && searchResponse.data.results.length > 0) {
-                for (const result of searchResponse.data.results) {
-                    // Score the result based on various factors
-                    let score = 0;
-                    
-                    // Check if the name matches
-                    if (result.name.toLowerCase().includes(dormName.toLowerCase())) {
-                        score += 3;
-                    }
-                    
-                    // Check if it's on campus
-                    const resultLat = result.geometry.location.lat;
-                    const resultLng = result.geometry.location.lng;
-                    const distanceFromCampus = Math.sqrt(
-                        Math.pow(resultLat - 30.6180, 2) +
-                        Math.pow(resultLng - (-96.3370), 2)
-                    );
-                    
-                    if (distanceFromCampus < 0.01) { // Within ~1km of campus center
-                        score += 2;
-                    }
-                    
-                    // Check for keywords in the address
-                    const address = result.formatted_address.toLowerCase();
-                    if (address.includes('texas a&m') || address.includes('tamu')) {
-                        score += 2;
-                    }
-                    if (address.includes('college station')) {
-                        score += 1;
-                    }
-                    
-                    // Check if it's a building (not a parking lot, etc.)
-                    if (result.types.includes('establishment')) {
-                        score += 1;
-                    }
-                    
-                    console.log(`Result score for ${result.name}: ${score}`);
-                    
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestResult = result;
-                    }
-                }
-            }
-        }
-
-        if (bestResult && bestScore >= 4) { // Minimum score threshold
-            const newCoordinates = {
-                lat: bestResult.geometry.location.lat,
-                lng: bestResult.geometry.location.lng
-            };
-            
-            console.log(`Found better location for ${dormName}:`, {
-                address: bestResult.formatted_address,
-                score: bestScore,
-                coordinates: newCoordinates
-            });
-            
-            return newCoordinates;
-        }
-
-        console.log(`No better location found for ${dormName}, keeping current coordinates`);
-        return coordinates;
-    } catch (error) {
-        console.error(`Error verifying location for ${dormName}:`, error);
-        return coordinates;
-    }
-}
-
-// Update dorm locations with verified coordinates
-async function updateDormLocations() {
-    try {
-        console.log('Updating dorm locations...');
-        const dorms = await loadDorms();
-        
-        for (const dorm of dorms) {
-            const currentLocation = dormLocations[dorm.name];
-            if (currentLocation) {
-                // Verify the current location
-                const verifiedLocation = await verifyDormLocation(dorm.name, currentLocation);
-                if (verifiedLocation) {
-                    dormLocations[dorm.name] = verifiedLocation;
-                    console.log(`Updated verified location for ${dorm.name}:`, verifiedLocation);
-                }
-            } else {
-                // Try to find a new location
-                console.log(`Fetching new location for ${dorm.name}`);
-                const location = await getDormLocation(dorm.name);
-                if (location) {
-                    dormLocations[dorm.name] = location;
-                    console.log(`Updated location for ${dorm.name}:`, location);
-                }
-            }
-        }
-        
-        console.log('Dorm locations updated successfully');
-    } catch (error) {
-        console.error('Error updating dorm locations:', error);
-    }
-}
-
-// Update locations when server starts
-updateDormLocations();
-
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'healthy' });
@@ -540,20 +347,21 @@ app.get('/', (req, res) => {
 app.get('/map', async (req, res) => {
     try {
         const dorms = await loadDorms();
+        const verifiedCoordinates = JSON.parse(await fs.readFile('data/dormcords.json', 'utf8'));
         
-        // Add coordinates to each dorm
-        const dormsWithCoordinates = dorms.map(dorm => ({
+        // Update coordinates in dorms data
+        const dormsWithVerifiedCoordinates = dorms.dorms.map(dorm => ({
             ...dorm,
-            coordinates: dormLocations[dorm.name] || null
+            coordinates: verifiedCoordinates[dorm.name] || dorm.coordinates
         }));
 
-        console.log('Sending dorms to map view:', dormsWithCoordinates.map(d => ({
+        console.log('Sending dorms to map view:', dormsWithVerifiedCoordinates.map(d => ({
             name: d.name,
             coordinates: d.coordinates
         })));
 
         res.render('map', { 
-            dorms: dormsWithCoordinates,
+            dorms: dormsWithVerifiedCoordinates,
             googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY
         });
     } catch (error) {
@@ -592,9 +400,9 @@ app.post('/search', searchLimiter, async (req, res) => {
 
         // Load and validate dorms data
         const dorms = await loadDorms();
-        console.log('Total dorms loaded:', dorms.length);
+        console.log('Total dorms loaded:', dorms.dorms.length);
         
-        if (!Array.isArray(dorms) || dorms.length === 0) {
+        if (!Array.isArray(dorms.dorms) || dorms.dorms.length === 0) {
             console.error('No dorms data available');
             return res.status(500).json({ 
                 error: 'Unable to load dorm data',
@@ -603,7 +411,7 @@ app.post('/search', searchLimiter, async (req, res) => {
         }
 
         // Filter dorms based on criteria
-        const filteredDorms = dorms
+        const filteredDorms = dorms.dorms
             .map(dorm => {
                 // Get rates for the specific room type
                 const matchedRates = dorm.rates.filter(rate => {

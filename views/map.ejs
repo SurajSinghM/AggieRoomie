@@ -154,8 +154,8 @@
             const dormList = document.getElementById('dormList');
             
             dorms.forEach(dorm => {
-                if (!dorm.coordinates) {
-                    console.warn(`No coordinates found for ${dorm.name}`);
+                if (!dorm.coordinates || typeof dorm.coordinates.lat !== 'number' || typeof dorm.coordinates.lng !== 'number') {
+                    console.warn(`No valid coordinates found for ${dorm.name}`);
                     return;
                 }
 
@@ -163,10 +163,7 @@
 
                 // Create marker
                 const marker = new google.maps.Marker({
-                    position: {
-                        lat: parseFloat(dorm.coordinates.lat),
-                        lng: parseFloat(dorm.coordinates.lng)
-                    },
+                    position: dorm.coordinates,
                     map: map,
                     title: dorm.name,
                     animation: google.maps.Animation.DROP,
@@ -207,10 +204,7 @@
                 dormItem.textContent = dorm.name;
                 dormItem.addEventListener('click', () => {
                     // Center map on dorm
-                    map.setCenter({
-                        lat: parseFloat(dorm.coordinates.lat),
-                        lng: parseFloat(dorm.coordinates.lng)
-                    });
+                    map.setCenter(dorm.coordinates);
                     map.setZoom(17);
                     
                     // Open info window

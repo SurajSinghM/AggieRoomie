@@ -4,10 +4,13 @@
       "name": "Appelt Hall",
       "location": "South Campus",
       "coordinates": {
-        "lat": 30.6170,
-        "lng": -96.3360
+        "lat": 30.617,
+        "lng": -96.336
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -23,7 +26,7 @@
         "bathroomType": "Community"
       },
       "googleReview": {
-        "rating": 4.0,
+        "rating": 4,
         "reviews": 85
       }
     },
@@ -34,7 +37,10 @@
         "lat": 30.6169,
         "lng": -96.3359
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -61,7 +67,10 @@
         "lat": 30.6182,
         "lng": -96.3375
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -85,10 +94,13 @@
       "name": "Clements Hall",
       "location": "North Campus",
       "coordinates": {
-        "lat": 30.6180,
-        "lng": -96.3370
+        "lat": 30.618,
+        "lng": -96.337
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -115,7 +127,9 @@
         "lat": 30.6185,
         "lng": -96.3378
       },
-      "roomTypes": ["Suite"],
+      "roomTypes": [
+        "Suite"
+      ],
       "rates": [
         {
           "type": "Suite",
@@ -138,7 +152,9 @@
         "lat": 30.6178,
         "lng": -96.3368
       },
-      "roomTypes": ["Single Suite"],
+      "roomTypes": [
+        "Single Suite"
+      ],
       "rates": [
         {
           "type": "Single Suite",
@@ -161,7 +177,10 @@
         "lat": 30.6179,
         "lng": -96.3369
       },
-      "roomTypes": ["Single", "Suite"],
+      "roomTypes": [
+        "Single",
+        "Suite"
+      ],
       "rates": [
         {
           "type": "Single",
@@ -188,7 +207,9 @@
         "lat": 30.6177,
         "lng": -96.3367
       },
-      "roomTypes": ["Double"],
+      "roomTypes": [
+        "Double"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -200,7 +221,7 @@
         "bathroomType": "Semi-Private"
       },
       "googleReview": {
-        "rating": 4.0,
+        "rating": 4,
         "reviews": 78
       }
     },
@@ -211,7 +232,11 @@
         "lat": 30.6188,
         "lng": -96.3382
       },
-      "roomTypes": ["Double", "Single", "Suite"],
+      "roomTypes": [
+        "Double",
+        "Single",
+        "Suite"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -240,9 +265,11 @@
       "location": "North Campus",
       "coordinates": {
         "lat": 30.6186,
-        "lng": -96.3380
+        "lng": -96.338
       },
-      "roomTypes": ["Suite"],
+      "roomTypes": [
+        "Suite"
+      ],
       "rates": [
         {
           "type": "Suite",
@@ -265,7 +292,9 @@
         "lat": 30.6175,
         "lng": -96.3365
       },
-      "roomTypes": ["Double"],
+      "roomTypes": [
+        "Double"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -288,7 +317,10 @@
         "lat": 30.6184,
         "lng": -96.3376
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -315,7 +347,10 @@
         "lat": 30.6176,
         "lng": -96.3366
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -342,7 +377,9 @@
         "lat": 30.6174,
         "lng": -96.3364
       },
-      "roomTypes": ["Double"],
+      "roomTypes": [
+        "Double"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -365,7 +402,9 @@
         "lat": 30.6173,
         "lng": -96.3363
       },
-      "roomTypes": ["Double"],
+      "roomTypes": [
+        "Double"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -377,7 +416,7 @@
         "bathroomType": "Semi-Private"
       },
       "googleReview": {
-        "rating": 4.0,
+        "rating": 4,
         "reviews": 85
       }
     },
@@ -388,7 +427,10 @@
         "lat": 30.6183,
         "lng": -96.3377
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -415,7 +457,10 @@
         "lat": 30.6181,
         "lng": -96.3374
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -442,7 +487,10 @@
         "lat": 30.6172,
         "lng": -96.3362
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -469,7 +517,10 @@
         "lat": 30.6171,
         "lng": -96.3361
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -485,7 +536,7 @@
         "bathroomType": "Community"
       },
       "googleReview": {
-        "rating": 4.0,
+        "rating": 4,
         "reviews": 88
       }
     },
@@ -496,7 +547,10 @@
         "lat": 30.6168,
         "lng": -96.3358
       },
-      "roomTypes": ["Double", "Single"],
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
       "rates": [
         {
           "type": "Double",
@@ -512,8 +566,38 @@
         "bathroomType": "Community"
       },
       "googleReview": {
-        "rating": 4.0,
+        "rating": 4,
         "reviews": 87
+      }
+    },
+    {
+      "name": "Keathley Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.6148577,
+        "lng": -96.3348997
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "rating": 4.2,
+        "reviews": 92
       }
     }
   ]

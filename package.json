@@ -1,24 +1,27 @@
 {
-  "name": "aggieroomie",
+  "name": "aggie-roomie",
   "version": "1.0.0",
-  "description": "A dorm ranking application for Texas A&M students",
+  "description": "A dorm review system for Texas A&M University",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "scrape": "node scripts/scrapeDorms.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@googlemaps/google-maps-services-js": "^3.4.1",
+    "@googlemaps/google-maps-services-js": "^3.3.41",
     "body-parser": "^1.20.2",
-    "dotenv": "^16.5.0",
-    "ejs": "^3.1.10",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
-    "express-rate-limit": "^7.1.5",
-    "puppeteer": "^21.5.2"
+    "express-rate-limit": "^7.1.5"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
-  }
-}
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+} 
