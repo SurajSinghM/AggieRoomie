@@ -338,10 +338,44 @@ export default function Search() {
   };
 
   // Only calculate filtered dorms when showResults is true
-  const filteredDorms = showResults ? dorms.map(dorm => ({
-    ...dorm,
-    matchScore: calculateMatchScore(dorm)
-  })).sort((a, b) => b.matchScore - a.matchScore) : [];
+  const filteredDorms = showResults ? dorms
+    .filter(dorm => {
+      // Filter by room type - only show dorms that have the requested room type
+      if (searchCriteria.roomType && !dorm.roomTypes.includes(searchCriteria.roomType)) {
+        return false;
+      }
+      
+      // Filter by location - only show dorms in the requested location
+      if (searchCriteria.location && dorm.location !== searchCriteria.location) {
+        return false;
+      }
+      
+      // Filter by budget - only show dorms with at least one option within budget
+      if (searchCriteria.budget) {
+        const budget = parseFloat(searchCriteria.budget);
+        let dormRates = [];
+        
+        if (Array.isArray(dorm.rates)) {
+          dormRates = dorm.rates.map(rate => parseFloat(rate.rate.replace('$', '').replace(',', '')));
+        } else if (dorm.rates && typeof dorm.rates === 'object') {
+          dormRates = [dorm.rates.min, dorm.rates.max];
+        }
+        
+        if (dormRates.length > 0) {
+          const minRate = Math.min(...dormRates);
+          if (minRate > budget) {
+            return false; // No options within budget
+          }
+        }
+      }
+      
+      return true; // Pass all filters
+    })
+    .map(dorm => ({
+      ...dorm,
+      matchScore: calculateMatchScore(dorm)
+    }))
+    .sort((a, b) => b.matchScore - a.matchScore) : [];
 
   const renderDormCard = (dorm) => {
     const googleData = googleReviews[dorm.name];
