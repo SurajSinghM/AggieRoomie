@@ -12,10 +12,6 @@ export default function Home() {
       <Head>
         <title>AggieRoomie - Your Perfect Dorm Finder</title>
         <meta name="description" content="Find your perfect dorm at Texas A&M University with our comprehensive search and comparison tools" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
 
       <nav className={styles.navbar}>
@@ -24,12 +20,6 @@ export default function Home() {
             <span className={styles.logoText}>AggieRoomie</span>
           </div>
           <div className={styles.navActions}>
-            <Link href="/search" className="btn btn-outline">
-              Search Dorms
-            </Link>
-            <Link href="/map" className="btn btn-primary">
-              View Map
-            </Link>
             <a 
               href="https://github.com/SurajSinghM/AggieRoomie" 
               target="_blank" 
@@ -67,9 +57,10 @@ export default function Home() {
           </div>
           <div className={styles.heroVisual}>
             <div className={styles.heroImage}>
-              <div className={styles.buildingIcon}>🏢</div>
-              <div className={styles.mapIcon}>🗺️</div>
-              <div className={styles.searchIcon}>🔍</div>
+              <div className={styles.logoContainer}>
+                <img src="/logo.png" alt="AggieRoomie Logo" className={styles.mainLogo} />
+                <div className={styles.glowEffect}></div>
+              </div>
             </div>
           </div>
         </div>

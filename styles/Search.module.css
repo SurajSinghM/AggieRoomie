@@ -60,9 +60,11 @@
 }
 
 .mapButton:hover {
-  background: var(--aggie-maroon-dark);
+  background: var(--aggie-maroon-dark) !important;
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+  color: white !important;
+  text-decoration: none !important;
 }
 
 .mapIcon {
