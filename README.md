@@ -1,67 +1,94 @@
 # AggieRoomie
 
-AggieRoomie is a web application that helps Texas A&M students find and compare dorm halls. Built with Next.js and the Google Maps API.
+A comprehensive dorm search and comparison tool for Texas A&M University students.
 
 ## Features
 
-- Interactive campus map showing dorm locations
-- Detailed dorm information including room types, rates, and amenities
-- Search and filter dorms by location, room type, and price
-- Compare up to 3 dorms side by side
-- Google Maps integration for accurate locations and reviews
+- **Smart Search**: Filter dorms by location, room type, and budget
+- **Interactive Map**: Explore dorm locations on campus
+- **Real Reviews**: Google Places integration for authentic reviews
+- **Price Comparison**: Compare rates across different room types
+- **Match Scoring**: AI-powered dorm recommendations
 
-## Getting Started
+## Setup
 
 ### Prerequisites
 
-- Node.js 14.x or later
+- Node.js (v14 or higher)
 - npm or yarn
-- Google Maps API key
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/AggieRoomie.git
+git clone <repository-url>
 cd AggieRoomie
 ```
 
 2. Install dependencies:
 ```bash
 npm install
-# or
-yarn install
 ```
 
-3. Create a `.env.local` file in the root directory and add your Google Maps API key:
-```
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
+3. Set up environment variables:
+Create a `.env.local` file in the root directory with the following variables:
+
+```env
+# Google Places API Key (for reviews)
+NEXT_PUBLIC_GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
+
+# Google Maps API Key (for map functionality)
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 ```
 
-4. Run the development server:
+### Getting Google API Keys
+
+1. **Google Places API Key** (for reviews):
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Enable the "Places API" and "Places API (New)"
+   - Create credentials (API Key)
+   - Add the key to your `.env.local` file
+
+2. **Google Maps API Key** (for map functionality):
+   - In the same Google Cloud Console project
+   - Enable the "Maps JavaScript API"
+   - Use the same API key or create a separate one
+   - Add the key to your `.env.local` file
+
+### Running the Application
+
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+The application will be available at `http://localhost:3000`
 
-## Deployment
+## Usage
 
-The application is configured for deployment on Vercel. Simply connect your GitHub repository to Vercel and it will automatically deploy your application.
+1. **Home Page**: Landing page with feature overview
+2. **Search Page**: Filter and search for dorms based on your preferences
+3. **Map Page**: Interactive campus map showing dorm locations
+
+## Technologies Used
+
+- Next.js
+- React
+- Google Places API
+- Google Maps API
+- CSS Modules
+- Modern JavaScript (ES6+)
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## Acknowledgments
 

@@ -4,5 +4,7 @@
   "/_document": "pages/_document.js",
   "/map": "pages/map.js",
   "/search": "pages/search.js",
-  "/api/dorms": "pages/api/dorms.js"
+  "/": "pages/index.js",
+  "/api/dorms": "pages/api/dorms.js",
+  "/api/google-places": "pages/api/google-places.js"
 }
