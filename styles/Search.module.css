@@ -693,6 +693,7 @@
 }
 
 .loadingSpinner {
+  display: inline-block;
   width: 40px;
   height: 40px;
   border: 3px solid var(--neutral-200);
@@ -702,9 +703,8 @@
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .loadingContainer p {
@@ -898,32 +898,13 @@
 }
 
 .reviewsLoadingSpinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid var(--neutral-100);
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--neutral-200);
   border-radius: 50%;
   border-top-color: var(--aggie-maroon);
-  border-right-color: var(--aggie-maroon-light);
-  animation: spin 1.2s ease-in-out infinite;
-  margin-bottom: var(--space-4);
-  position: relative;
-}
-
-.reviewsLoadingSpinner::before {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  border: 2px solid transparent;
-  border-radius: 50%;
-  background: linear-gradient(45deg, var(--aggie-maroon), var(--aggie-maroon-light)) border-box;
-  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out;
-  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  animation: pulse 2s ease-in-out infinite;
+  animation: spin 1s ease-in-out infinite;
 }
 
 .reviewsLoadingContainer p {

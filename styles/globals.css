@@ -113,6 +113,16 @@
   --transition-fast: 150ms ease-in-out;
   --transition-normal: 250ms ease-in-out;
   --transition-slow: 350ms ease-in-out;
+
+  /* Light mode variables */
+  --background: #f7f7f7;
+  --foreground: #181c20;
+  --card-bg: #fff;
+  --card-fg: #181c20;
+  --primary: #800000;
+  --secondary: #b3a369;
+  --border: #e0e0e0;
+  --shadow: 0 4px 24px rgba(0,0,0,0.12);
 }
 
 * {
@@ -132,10 +142,25 @@ body {
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--leading-normal);
-  color: var(--neutral-900);
-  background-color: var(--neutral-50);
+  color: var(--foreground);
+  background-color: var(--background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Dark mode overrides */
+body.dark-mode {
+  --background: #181c20;
+  --foreground: #fff;
+  --card-bg: #23272b;
+  --card-fg: #fff;
+  --primary: #b3a369;
+  --secondary: #ffd700;
+  --border: #23272b;
+  --shadow: 0 4px 24px rgba(0,0,0,0.32);
+  background: var(--background);
+  color: var(--foreground);
 }
 
 a {
@@ -256,10 +281,11 @@ a:hover {
 
 /* Card Styles */
 .card {
-  background-color: white;
-  border-radius: var(--radius-lg);
+  background-color: var(--card-bg);
+  color: var(--card-fg);
+  border-radius: 16px;
+  border: 1px solid var(--border);
   box-shadow: var(--shadow);
-  border: 1px solid var(--neutral-200);
   overflow: hidden;
   transition: all var(--transition-fast);
 }

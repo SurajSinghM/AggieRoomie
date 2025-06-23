@@ -47,12 +47,9 @@ export default function Home() {
               comparison tools, and interactive campus map.
             </p>
             <div className={styles.heroActions}>
-              <Link href="/search" className="btn btn-primary btn-lg">
-                Start Searching
-              </Link>
-              <Link href="/map" className="btn btn-secondary btn-lg">
-                Explore Campus Map
-              </Link>
+              <Link href="/search" legacyBehavior><a className="btn btn-primary btn-lg">Dorm Search</a></Link>
+              <Link href="/search-apartments" legacyBehavior><a className="btn btn-primary btn-lg">Apartment Search</a></Link>
+              <Link href="/map" legacyBehavior><a className="btn btn-secondary btn-lg">Explore Campus Map</a></Link>
             </div>
           </div>
           <div className={styles.heroVisual}>
@@ -94,9 +91,7 @@ export default function Home() {
         <div className={styles.cta}>
           <h2>Ready to Find Your Perfect Dorm?</h2>
           <p>Join thousands of Aggies who have found their ideal living space with AggieRoomie.</p>
-          <Link href="/search" className="btn btn-primary btn-lg">
-            Get Started Now
-          </Link>
+          <Link href="/search" legacyBehavior><a className="btn btn-primary btn-lg">Get Started Now</a></Link>
         </div>
       </main>
 

@@ -495,9 +495,9 @@ export default function Search() {
 
   if (loading) {
     return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loadingSpinner}></div>
-        <p>Finding your perfect dorm...</p>
+      <div className={styles.loadingContainer} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
+        <div className={styles.loadingSpinner} style={{ width: 48, height: 48, border: '6px solid #eee', borderTop: '6px solid #800000', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 16 }}></div>
+        <div style={{ color: '#b3b3b3', fontWeight: 600, fontSize: 18 }}>Finding your perfect dorm...</div>
       </div>
     );
   }
@@ -610,17 +610,10 @@ export default function Search() {
           <div className={styles.searchButtonContainer}>
             <button 
               onClick={handleSearch} 
-              className={`${styles.searchButton} ${loadingReviews ? styles.searchButtonLoading : ''}`}
+              className={styles.searchButton}
               disabled={loadingReviews}
             >
-              {loadingReviews ? (
-                <>
-                  <div className={styles.buttonSpinner}></div>
-                  Loading...
-                </>
-              ) : (
-                'Find Dorms'
-              )}
+              Find Dorms
             </button>
           </div>
         </div>
@@ -633,12 +626,9 @@ export default function Search() {
             </div>
 
             {loadingReviews && (
-              <div className={styles.reviewsLoadingContainer}>
-                <div className={styles.reviewsLoadingSpinner}></div>
-                <p>Searching for dorms...</p>
-                <div className={styles.reviewsLoadingProgress}>
-                  <div className={styles.reviewsLoadingBar}></div>
-                </div>
+              <div className={styles.reviewsLoadingContainer} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
+                <div className={styles.reviewsLoadingSpinner} style={{ width: 40, height: 40, border: '3px solid #eee', borderTop: '3px solid #800000', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 16 }}></div>
+                <div style={{ color: '#b3b3b3', fontWeight: 600, fontSize: 18 }}>Searching for dorms...</div>
               </div>
             )}
 

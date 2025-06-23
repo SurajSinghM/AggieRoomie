@@ -2,9 +2,10 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+  "/search-apartments": "pages/search-apartments.js",
   "/": "pages/index.js",
-  "/map": "pages/map.js",
-  "/api/map": "pages/api/map.js",
   "/search": "pages/search.js",
-  "/api/dorms": "pages/api/dorms.js"
+  "/api/apartments": "pages/api/apartments.js",
+  "/api/dorms": "pages/api/dorms.js",
+  "/api/google-places": "pages/api/google-places.js"
 }
