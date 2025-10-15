@@ -7,13 +7,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const dormsPath = path.join(process.cwd(), 'data', 'dorms.json');
-    const dormsData = JSON.parse(fs.readFileSync(dormsPath, 'utf8'));
+  
+  const enrichedPath = path.join(process.cwd(), 'data', 'dorms_with_reviews.json');
+  const defaultPath = path.join(process.cwd(), 'data', 'dorms.json');
+  const dormsPath = fs.existsSync(enrichedPath) ? enrichedPath : defaultPath;
+  const dormsData = JSON.parse(fs.readFileSync(dormsPath, 'utf8'));
     
-    // Extract the dorms array from the nested structure
+    
     const dorms = Array.isArray(dormsData.dorms) ? dormsData.dorms : [];
     
-    // Keep the original rates structure with room type-specific prices
+    
     const validDorms = dorms.map(dorm => {
       return {
         name: dorm.name || 'Unknown',

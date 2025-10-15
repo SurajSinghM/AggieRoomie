@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -8,11 +8,13 @@ export default function Map() {
   const router = useRouter();
   const [dorms, setDorms] = useState([]);
   const [selectedDorm, setSelectedDorm] = useState(null);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [google, setGoogle] = useState(null);
+  const markerMapRef = useRef({});
 
   useEffect(() => {
     const fetchDorms = async () => {
@@ -24,7 +26,7 @@ export default function Map() {
         const data = await response.json();
         setDorms(data);
 
-        // If a dorm is specified in the URL, select it
+        
         if (router.query.dorm) {
           const dorm = data.find(d => d.name === router.query.dorm);
           if (dorm) {
@@ -44,23 +46,23 @@ export default function Map() {
   useEffect(() => {
     const initMap = async () => {
       try {
-        // Check if Google Maps API key is available
+        
         if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
           throw new Error('Google Maps API key not configured');
         }
 
-        // Wait for the DOM to be ready
+        
         await new Promise(resolve => setTimeout(resolve, 100));
 
-        // Check if the map container exists
+        
         const mapContainer = document.getElementById('map');
         if (!mapContainer) {
-          // Retry after a short delay
+          
           setTimeout(() => initMap(), 500);
           return;
         }
 
-        // Load Google Maps API
+        
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
         script.async = true;
@@ -69,7 +71,7 @@ export default function Map() {
         script.onload = () => {
           try {
             const mapInstance = new window.google.maps.Map(mapContainer, {
-              center: { lat: 30.6150, lng: -96.3400 }, // Adjusted to better view of campus dorms
+              center: { lat: 30.6150, lng: -96.3400 }, 
               zoom: 16,
               styles: [
                 {
@@ -96,6 +98,8 @@ export default function Map() {
 
             setMap(mapInstance);
             setGoogle(window.google);
+
+            
           } catch (mapError) {
             setError(`Failed to create map: ${mapError.message}`);
           }
@@ -118,11 +122,11 @@ export default function Map() {
 
   useEffect(() => {
     if (map && google && dorms.length > 0) {
-      // Clear existing markers
+      
       markers.forEach(marker => marker.setMap(null));
       const newMarkers = [];
 
-      // Add markers for each dorm
+      
       dorms.forEach(dorm => {
         if (dorm.coordinates && dorm.coordinates.lat && dorm.coordinates.lng) {
           const marker = new google.maps.Marker({
@@ -146,17 +150,48 @@ export default function Map() {
             }
           });
 
-          const infoWindow = new google.maps.InfoWindow({
-            content: `
-              <div class="${styles.infoWindow}">
-                <h3>${dorm.name}</h3>
-                <p>${dorm.location}</p>
-                <p><strong>Room Types:</strong> ${dorm.roomTypes ? dorm.roomTypes.join(', ') : 'N/A'}</p>
-                <div class="${styles.infoWindowActions}">
-                  <a href="/search?dorm=${encodeURIComponent(dorm.name)}" class="btn btn-primary">View Details</a>
-                </div>
-              </div>
-            `
+          
+          const safeId = `open-full-${dorm.name.replace(/[^a-z0-9]/gi, '-')}`;
+          const infoContentParts = [];
+          infoContentParts.push(`<div class="${styles.infoWindow}">`);
+          infoContentParts.push(`<h3>${dorm.name}</h3>`);
+          infoContentParts.push(`<p>${dorm.location || ''}</p>`);
+          infoContentParts.push(`<p><strong>Room Types:</strong> ${dorm.roomTypes ? dorm.roomTypes.join(', ') : 'N/A'}</p>`);
+
+          if (dorm.googleReview) {
+            const gr = dorm.googleReview;
+            infoContentParts.push(`<p><strong>Rating:</strong> ${gr.rating ?? 'N/A'} (${gr.reviews ?? 0} reviews)</p>`);
+            if (gr.recentReviews && gr.recentReviews.length > 0) {
+              infoContentParts.push(`<div class="${styles.recentReviews}"><strong>Recent reviews</strong><ul>`);
+              gr.recentReviews.slice(0,3).forEach(r => {
+                const author = r.author ? `<em>${r.author}</em>: ` : '';
+                const text = r.text ? r.text.replace(/</g, '&lt;') : '';
+                infoContentParts.push(`<li>${author}${text}</li>`);
+              });
+              infoContentParts.push(`</ul></div>`);
+            }
+          }
+
+          infoContentParts.push(`<div class="${styles.infoWindowActions}">`);
+          infoContentParts.push(`<button id="${safeId}" class="btn btn-primary">Open full details</button>`);
+          infoContentParts.push(`</div></div>`);
+
+          const infoWindow = new google.maps.InfoWindow({ content: infoContentParts.join('') });
+
+          
+          google.maps.event.addListener(infoWindow, 'domready', () => {
+            try {
+              const btn = document.getElementById(safeId);
+              if (btn && !btn.dataset.bound) {
+                btn.addEventListener('click', () => {
+                  
+                  try { router.push(`/search?dorm=${encodeURIComponent(dorm.name)}`); } catch (e) { window.location.href = `/search?dorm=${encodeURIComponent(dorm.name)}`; }
+                });
+                btn.dataset.bound = '1';
+              }
+            } catch (e) {
+              
+            }
           });
 
           marker.addListener('click', () => {
@@ -165,6 +200,8 @@ export default function Map() {
           });
 
           newMarkers.push(marker);
+          
+          try { markerMapRef.current[dorm.name] = { marker, infoWindow }; } catch (e) {}
         }
       });
 
@@ -182,6 +219,11 @@ export default function Map() {
       map.setZoom(17);
     }
   }, [map, selectedDorm]);
+
+  
+  
+
+  
 
   const handleDormClick = (dorm) => {
     setSelectedDorm(dorm);
@@ -220,7 +262,7 @@ export default function Map() {
         <title>Campus Map - AggieRoomie</title>
         <meta name="description" content="View dorm locations on Texas A&M campus map" />
         
-        {/* Fonts */}
+        {}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -261,7 +303,7 @@ export default function Map() {
 
         <div className={styles.mapContainer}>
           <div id="map" className={styles.map}></div>
-          <div className={styles.dormList}>
+            <div className={styles.dormList}>
             <h2>Dorms ({dorms.length})</h2>
             <div className={styles.dormGrid}>
               {dorms.map((dorm) => (
@@ -277,11 +319,25 @@ export default function Map() {
                       <p><strong>Room Types:</strong> {dorm.roomTypes.join(', ')}</p>
                     </div>
                   )}
-                  <div className={styles.actions}>
-                    <Link href={`/search?dorm=${encodeURIComponent(dorm.name)}`} className={styles.viewDetailsButton}>
-                      View Details
-                    </Link>
-                  </div>
+                    <div className={styles.actions}>
+                      <button
+                        className={styles.viewDetailsButton}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          
+                          const entry = markerMapRef.current && markerMapRef.current[dorm.name];
+                          if (entry && entry.infoWindow && entry.marker && map) {
+                            entry.infoWindow.open(map, entry.marker);
+                            setSelectedDorm(dorm);
+                          } else {
+                            
+                            try { router.push(`/search?dorm=${encodeURIComponent(dorm.name)}`); } catch (err) { window.location.href = `/search?dorm=${encodeURIComponent(dorm.name)}`; }
+                          }
+                        }}
+                      >
+                        View Details
+                      </button>
+                    </div>
                 </div>
               ))}
             </div>

@@ -10,11 +10,11 @@ export default async function handler(req, res) {
     const dormsPath = path.join(process.cwd(), 'data', 'dorms.json');
     const coordsPath = path.join(process.cwd(), 'data', 'dormcords.json');
 
-    // Read dorm data
+    
     const dormsData = JSON.parse(fs.readFileSync(dormsPath, 'utf8'));
     const coordsData = JSON.parse(fs.readFileSync(coordsPath, 'utf8'));
 
-    // Merge dorm data with coordinates
+    
     const dorms = dormsData.dorms.map(dorm => {
       const coordinates = coordsData[dorm.name];
       if (coordinates) {

@@ -52,8 +52,28 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 
 2. **Google Maps API Key** (for map functionality):
    - In the same Google Cloud Console project
-   - Enable the "Maps JavaScript API"
-   - Use the same API key or create a separate one
+
+## One-time populate Google Places reviews
+
+If you want to fetch Google Places reviews once and store them in a local JSON file so the site doesn't call the API on every search, use the script in `scripts/fetch_reviews.js`.
+
+1. Create a `.env.local` in the project root and add your key (server-side key is recommended):
+
+```
+GOOGLE_PLACES_API_KEY=YOUR_SERVER_SIDE_GOOGLE_PLACES_API_KEY
+```
+
+2. Run the script (from project root):
+
+```
+npm run populate-reviews
+```
+
+3. The script will write `data/dorms_with_reviews.json`. You can replace `data/dorms.json` with the new file or update your server route to serve the enriched file.
+
+Notes:
+- The script uses simple delays between requests to avoid quota spikes. For large-scale updates consider using backoff and monitoring quota usage in Google Cloud Console.
+- Do not commit `.env.local` to source control.
    - Add the key to your `.env.local` file
 
 ### Running the Application

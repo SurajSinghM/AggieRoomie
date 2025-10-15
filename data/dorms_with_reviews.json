@@ -1,0 +1,982 @@
+{
+  "dorms": [
+    {
+      "name": "Appelt Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.617,
+        "lng": -96.336
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Appelt Hall",
+        "rating": 4.5,
+        "reviews": 13,
+        "recentReviews": [
+          {
+            "author": "Asif Abro",
+            "rating": 5,
+            "text": "My son's Fall 2023 dorm. Very good."
+          },
+          {
+            "author": "Neel Mazumdar",
+            "rating": 5,
+            "text": "A decent residence hall to live in. The rooms are very spacious. The flooring is wood plank, which is much better than some dorms that have normal white tiles. A lot of closets and drawers are include..."
+          },
+          {
+            "author": "Neel",
+            "rating": 5,
+            "text": "Applet Hall, better known as Bruhpelt hall is a nice place! There were some initial plumbing problems, but the maintenance was quick and acted accordingly!"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Eppright Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6169,
+        "lng": -96.3359
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Eppright Hall",
+        "rating": 4.3,
+        "reviews": 4,
+        "recentReviews": [
+          {
+            "author": "Michael Fuehrer",
+            "rating": 3,
+            "text": "Many issues here. Nonstop late night noise with someone having a party until 2 AM or so most nights, fire ants in rooms, pathetic plumbing. This is my 4th semester in a “dorm” and my advice is to live..."
+          },
+          {
+            "author": "Karen Enchilada",
+            "rating": 5,
+            "text": "Delicious pineapple soda and brownies. Fried rice and orange chicken was spectacular."
+          },
+          {
+            "author": "Tom Wismar",
+            "rating": 4,
+            "text": "Same as the other modular dorms"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Aston Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.6182,
+        "lng": -96.3375
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,500"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,500"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2013",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Aston Hall",
+        "rating": 3.1,
+        "reviews": 30,
+        "recentReviews": [
+          {
+            "author": "Matthew Herrold",
+            "rating": 3,
+            "text": "Sharing my experience as a parent.  Would like to see a better HVAC system employed that can keep up with the summer temps, especially on the 4th floor.  The lack of Elevators contribute to a less tha..."
+          },
+          {
+            "author": "Rishab Deepak",
+            "rating": 1,
+            "text": "Do not live in Aston. Fire alarms go off 5 times a week cuz people burn popcorn. They will go off at 3AM. Terrible experience. Currently 2 am after 3 fire alarms that started at 12 AM. Got an 8AM tomo..."
+          },
+          {
+            "author": "Russell Seward",
+            "rating": 3,
+            "text": "My son lived in Aston Hall his freshmen year (2020/21 academic year) and it was okay. It's an older building (built in 1975), but his room on the third floor had been recently renovated, and the furni..."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Clements Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.618,
+        "lng": -96.337
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2014",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Clements Hall",
+        "rating": 4.6,
+        "reviews": 14,
+        "recentReviews": [
+          {
+            "author": "Traci Brunner",
+            "rating": 5,
+            "text": "Perfect location in the center of everything. Tons of space and love the private bathroom!  4th floor Honors quad is quiet with a view of the sand volleyball courts and park."
+          },
+          {
+            "author": "John Jeske'",
+            "rating": 5,
+            "text": "Its move in day! Whoop!!!!\nGet there early, bring refreshments it was a long day. Everyone was friendly and ready to lend a hand. Bring a rubber mallet if you have one to reconfigure the loft bed if n..."
+          },
+          {
+            "author": "Sabrina Ramirez",
+            "rating": 5,
+            "text": "Very large rooms with lots of space!! Great halls and resources for the students. Would totally recommend this hall to anybody!!!"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Dunn Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.6185,
+        "lng": -96.3378
+      },
+      "roomTypes": [
+        "Suite"
+      ],
+      "rates": [
+        {
+          "type": "Suite",
+          "rate": "$3,500"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2013",
+        "bathroomType": "Suite"
+      },
+      "googleReview": {
+        "name": "Dunn Hall",
+        "rating": 3.1,
+        "reviews": 24,
+        "recentReviews": [
+          {
+            "author": "Andy Bourgeois",
+            "rating": 5,
+            "text": "This is a fantastic dorm. Our son loves it. The location is perfect and close to everything. There is also an awesome dining hall,  post office,  everything a college kid needs to be successful. The C..."
+          },
+          {
+            "author": "Kaylah Perez",
+            "rating": 1,
+            "text": "The amount you pay for this dorm is not worth it. If you are going to choose a hall in the commons I would choose Mosher or Krueger as these are recently renovated. My shower had rust on the walls and..."
+          },
+          {
+            "author": "Leah Reyes",
+            "rating": 1,
+            "text": "Dunn Hall is a very convenient place to live. It is in the commons which in general has a lot of useful ammenities like a store, food market, study room, dining hall, and game room. But out of all the..."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Fowler Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6178,
+        "lng": -96.3368
+      },
+      "roomTypes": [
+        "Single Suite"
+      ],
+      "rates": [
+        {
+          "type": "Single Suite",
+          "rate": "$3,800"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Suite"
+      },
+      "googleReview": {
+        "name": "Fowler Hall",
+        "rating": 3.6,
+        "reviews": 18,
+        "recentReviews": [
+          {
+            "author": "Pamala Kech",
+            "rating": 5,
+            "text": "Room is a single and it’s very roomy. Sink area is updated and very clean. My son moved in his sophomore year 2021. It’s location is perfect. Easy access to most classes."
+          },
+          {
+            "author": "David Chambers",
+            "rating": 3,
+            "text": "Standard dorm accommodations.   Small rooms,  but bunking the beds and my wife's decorating made it pretty nice."
+          },
+          {
+            "author": "Jamie Peal",
+            "rating": 5,
+            "text": "visited to help daughter get moved in for school, hall has security doors and good lighting, rooms are good for dorms. very well built and feel that my daughter is secure there."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Hart Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6179,
+        "lng": -96.3369
+      },
+      "roomTypes": [
+        "Single",
+        "Suite"
+      ],
+      "rates": [
+        {
+          "type": "Single",
+          "rate": "$3,800"
+        },
+        {
+          "type": "Suite",
+          "rate": "$3,500"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Suite"
+      },
+      "googleReview": {
+        "name": "Hart Hall",
+        "rating": 4,
+        "reviews": 30,
+        "recentReviews": [
+          {
+            "author": "Aaron Williams",
+            "rating": 1,
+            "text": "No access or exit from Lubbock Street without proper access card or prior authorization. Funny because they had no problem letting me through the two gates to access it, but when I left the guy I spok..."
+          },
+          {
+            "author": "Gracie Allen",
+            "rating": 4,
+            "text": "As a freshmen living here, 2nd semester in, I will give you as detailed of a review that I can.\n\nPros- Practically central campus so classes are easier to get to. Is next to the MSC (so easy access to..."
+          },
+          {
+            "author": "David B",
+            "rating": 4,
+            "text": "Lived here in the old Army days calendar years 1984--1986, 3 years. No a/c. I think it was $500/semester. It was hot as hades but cheapest place to live on campus and great location. All concrete exce..."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Hobby Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6177,
+        "lng": -96.3367
+      },
+      "roomTypes": [
+        "Double"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Semi-Private"
+      },
+      "googleReview": {
+        "name": "Hobby Hall",
+        "rating": 4.5,
+        "reviews": 23,
+        "recentReviews": [
+          {
+            "author": "Josie Talley",
+            "rating": 4,
+            "text": "I loved living in Hobby Hall! It was conveniently close to great food places while also being a good spot from classes both on west camps and main campus. The main thing that I did not like was that i..."
+          },
+          {
+            "author": "Anthony M",
+            "rating": 5,
+            "text": "These are one of the best dorms at Texas A&M University. Two people stay in a drom room and share a bathroom. The size of the rooms are quite big. The furniture is good and the bed is alright. Hobby h..."
+          },
+          {
+            "author": "Marianela Allen",
+            "rating": 4,
+            "text": "Everything in this hall works and it's location on campus is extremely convenient, especially for engineering majors. The rooms on the odd numbered side of the hall have plenty of space, and the study..."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Hullabaloo Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.6188,
+        "lng": -96.3382
+      },
+      "roomTypes": [
+        "Double",
+        "Single",
+        "Suite"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,800"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,800"
+        },
+        {
+          "type": "Suite",
+          "rate": "$5,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2012",
+        "bathroomType": "Suite"
+      },
+      "googleReview": {
+        "name": "Hullabaloo Hall",
+        "rating": 4.5,
+        "reviews": 99,
+        "recentReviews": [
+          {
+            "author": "James Lovell",
+            "rating": 5,
+            "text": "I lived here my freshman year, and am coming back for my sophomore year. This is by far the nicest dorm at Texas A&M. It’s also the most expensive. Early in the semester there are definitely lots of d..."
+          },
+          {
+            "author": "Dash Dozier",
+            "rating": 3,
+            "text": "Way too expensive for what they give you. I was paying twice of what one of my friends was paying and I have a smaller room (Both of us have roommates too). Go with an older dorm if you're wanting to ..."
+          },
+          {
+            "author": "Shim",
+            "rating": 3,
+            "text": "Overrated and overpriced. You're paying for access to kitchens (which you will likely not use) and elevators. Had a pretty bad vandalism problem. Near Northgate, which might be a plus. If you're on a ..."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Krueger Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.6186,
+        "lng": -96.338
+      },
+      "roomTypes": [
+        "Suite"
+      ],
+      "rates": [
+        {
+          "type": "Suite",
+          "rate": "$3,500"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2013",
+        "bathroomType": "Suite"
+      },
+      "googleReview": {
+        "name": "Krueger Hall",
+        "rating": 3.9,
+        "reviews": 20,
+        "recentReviews": [
+          {
+            "author": "Nkemdi Anyiam",
+            "rating": 4,
+            "text": "(Note: Renovations were done to Krueger before I moved in, and I lived on the second floor)\nThe building had nice looking halls, and dorm rooms were nice too.\nThe bathrooms are not disgusting (clean r..."
+          },
+          {
+            "author": "Cynthia Flores",
+            "rating": 2,
+            "text": "Dorm was not ready to be lived in, therefore should have been closed down. Completely inhospitable environment. 24 fire alarms over 2 years and endless construction which would startle me in my sleep ..."
+          },
+          {
+            "author": "Sarah",
+            "rating": 1,
+            "text": "There’s roaches in all the dorms. And generations of them in the courtyard. They will spawn in your bathroom while you’re taking a shower."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Lechner Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6175,
+        "lng": -96.3365
+      },
+      "roomTypes": [
+        "Double"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Semi-Private"
+      },
+      "googleReview": {
+        "name": "Lechner Hall",
+        "rating": 3.3,
+        "reviews": 4,
+        "recentReviews": [
+          {
+            "author": "Owen Cai",
+            "rating": 1,
+            "text": "Bedding is deformed and can't adjust loft. Had to go home because replacement part wasn't immediately available."
+          },
+          {
+            "author": "M Family",
+            "rating": 5,
+            "text": "Clean. Very open rooms.  I have kids in hullabaloo and Lechner.  Hullabaloo is over priced and over rated.. My daughter moving had cockroach’s."
+          },
+          {
+            "author": "Samueldw75 W",
+            "rating": 5,
+            "text": "Pretty cool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Mosher Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6184,
+        "lng": -96.3376
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,300"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,300"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2015",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Mosher Hall",
+        "rating": 3.9,
+        "reviews": 40,
+        "recentReviews": [
+          {
+            "author": "Jose Araoz",
+            "rating": 4,
+            "text": "Standard dormitory for college students. My daughter has a roommate and 2 other suitemates to share the bathroom. The bathroom has locks that can be opened with a simple quarter.\nParking on the side o..."
+          },
+          {
+            "author": "Clayton Kristiansen",
+            "rating": 5,
+            "text": "Great dorm! I enjoyed living here my first semester and I can't overstate the convenience of the commons dining hall being so close."
+          },
+          {
+            "author": "CJ Weinstein",
+            "rating": 5,
+            "text": "Beautiful building, great amenities like Aggie Express. The kids enjoy the open air seating, to hang out. The rooms are very spacious compared to other large universities and the building feels brand ..."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Moses Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6176,
+        "lng": -96.3366
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,400"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,400"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2016",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Moses Hall",
+        "rating": 3.8,
+        "reviews": 17,
+        "recentReviews": [
+          {
+            "author": "Nicole Phillips",
+            "rating": 1,
+            "text": "These dorm rooms are way to small to be a double. The rooms are meant for one person. There is no reason to put two college students in these rooms. There should be enough housing that this dorm shoul..."
+          },
+          {
+            "author": "Helena Khuri",
+            "rating": 1,
+            "text": "having access to hullabaloo amenities and the starbucks was probably among the only good things about living there. the dorms are INSANELY small and honestly shouldn't be occupied by more than one per..."
+          },
+          {
+            "author": "Rigoberto Olivares",
+            "rating": 4,
+            "text": "Dorms aren't very big, but it's more that enough in my opinion. Two comunity restrooms per floor, they provide enough privacy, plus you don't have to worry about buying toilet paper or cleaning."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Rudder Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6174,
+        "lng": -96.3364
+      },
+      "roomTypes": [
+        "Double"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Semi-Private"
+      },
+      "googleReview": {
+        "name": "Rudder Hall",
+        "rating": 4.5,
+        "reviews": 18,
+        "recentReviews": [
+          {
+            "author": "Katlynn Johnson",
+            "rating": 5,
+            "text": "The best dorm on campus! Love it here! So close to the commons and south side rec ! Love all the people here everyone is so friendly and the washer and dryer situation here is amazing! Love that we ha..."
+          },
+          {
+            "author": "Lilly Cantrell",
+            "rating": 5,
+            "text": "I lived at this dorm for the 2018-2019 school year and I loved my experience. Although the outside and hallways look a little bit outdated, the dorm was very updated and extremely spacious. The locati..."
+          },
+          {
+            "author": "Aubrey Bilicek",
+            "rating": 5,
+            "text": "Great dorm to live in. The floors were recently renovated to take out the old, disgusting carpet and it now has the fake wood flooring. It makes it a lot better to keep clean. You get your own bathroo..."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Underwood Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6173,
+        "lng": -96.3363
+      },
+      "roomTypes": [
+        "Double"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Semi-Private"
+      },
+      "googleReview": {
+        "name": "Underwood Hall",
+        "rating": 4.6,
+        "reviews": 14,
+        "recentReviews": [
+          {
+            "author": "Frances Nelson",
+            "rating": 4,
+            "text": "It's a great mid-price hall. The rooms are pretty big and the bathrooms are nice enough. Lot's of closet space and floor to ceiling window. Now that commons are open again food will be much closer!"
+          },
+          {
+            "author": "Catherine McCleskey",
+            "rating": 5,
+            "text": "Super convenient location. Right next to the Commons, not a long walk from the MSC, and close to lots of buildings with freshman classes. This dorm is probably one of the nicest on campus except for H..."
+          },
+          {
+            "author": "Sunny Espanet",
+            "rating": 5,
+            "text": "My daughter loves that each room has its own bathroom"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Neeley Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.6183,
+        "lng": -96.3377
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,400"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,400"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2013",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Neeley Hall",
+        "rating": 4.3,
+        "reviews": 10,
+        "recentReviews": [
+          {
+            "author": "Daniel Lashua",
+            "rating": 4,
+            "text": "Easy to navigate. Smells like feet. Bathroom needed to be cleaned."
+          },
+          {
+            "author": "Megan Hecklinger",
+            "rating": 4,
+            "text": "Recently renovated so the building is considerably brighter in comparison to other modular halls. Close to Northgate and Sbisa/Underground. With regards to the price - modular dorms are the best"
+          },
+          {
+            "author": "Mike Alexander",
+            "rating": 4,
+            "text": "It's a dormitory. Not fancy but nice big rooms."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Walton Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.6181,
+        "lng": -96.3374
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,300"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,300"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "2013",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Walton Hall",
+        "rating": 3.3,
+        "reviews": 19,
+        "recentReviews": [
+          {
+            "author": "Tate Mendez",
+            "rating": 1,
+            "text": "There was mold growing in the showers and on the doors inside the bathroom when I first got there along with bugs crawling out from cracks of the room. The room I was in had a bad layout and super sma..."
+          },
+          {
+            "author": "Mar",
+            "rating": 3,
+            "text": "Cheap dorm, but good enough amenities. The spaces are very cramped though."
+          },
+          {
+            "author": "Jarod Wilson",
+            "rating": 4,
+            "text": "Another place to live"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Haas Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6172,
+        "lng": -96.3362
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Haas Hall",
+        "rating": 4,
+        "reviews": 11,
+        "recentReviews": [
+          {
+            "author": "David (TheRealDavidDavis)",
+            "rating": 2,
+            "text": "The AC units have mold on the inside of them. I had to keep my AC off when I stayed there because every time I turned it on I would get allergies/sick. Some of the Study carols are in bad condition an..."
+          },
+          {
+            "author": "Jamie Janczak",
+            "rating": 4,
+            "text": "Rooms are huge compared to most dorms as well as individual bathrooms for each room. Only down side is that there are no elevators, so good luck moving in/out on the fourth floor."
+          },
+          {
+            "author": "Anthony Binetti",
+            "rating": 5,
+            "text": ""
+          }
+        ]
+      }
+    },
+    {
+      "name": "McFadden Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6171,
+        "lng": -96.3361
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "McFadden Hall",
+        "rating": 3.9,
+        "reviews": 18,
+        "recentReviews": [
+          {
+            "author": "Kody Chu",
+            "rating": 5,
+            "text": "S- tier location if you have a bike or scooter.\n\nYou can get to anywhere on campus in 10 minutes or less. Wehner is 6 minutes by bike. Zachary is 4 minutes.\n\nAlso close to Northgate and Hullabaloo"
+          },
+          {
+            "author": "Nathan Hardwick",
+            "rating": 2,
+            "text": "The LAUNCH LLP is great there but the dorm needs help. McFadden is a great dorm if you like leaking pipes, lots of rust, and a mold issue with the ventilation system."
+          },
+          {
+            "author": "Tom Wismar",
+            "rating": 3,
+            "text": "Rooms are better than the commons but still not great."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Wells Hall",
+      "location": "South Campus",
+      "coordinates": {
+        "lat": 30.6168,
+        "lng": -96.3358
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Wells Hall",
+        "rating": 3,
+        "reviews": 6,
+        "recentReviews": [
+          {
+            "author": "Hayden Roper",
+            "rating": 5,
+            "text": "Room 131 was and forever will be the Pinnacle of on campus housing. She will be missed."
+          },
+          {
+            "author": "Erik",
+            "rating": 1,
+            "text": "Smells bad inside"
+          },
+          {
+            "author": "Leonard Leachman",
+            "rating": 3,
+            "text": "Seen a lot worse."
+          }
+        ]
+      }
+    },
+    {
+      "name": "Keathley Hall",
+      "location": "North Campus",
+      "coordinates": {
+        "lat": 30.6148577,
+        "lng": -96.3348997
+      },
+      "roomTypes": [
+        "Double",
+        "Single"
+      ],
+      "rates": [
+        {
+          "type": "Double",
+          "rate": "$3,200"
+        },
+        {
+          "type": "Single",
+          "rate": "$4,200"
+        }
+      ],
+      "buildingInfo": {
+        "yearBuilt": "1968",
+        "bathroomType": "Community"
+      },
+      "googleReview": {
+        "name": "Keathley Hall",
+        "rating": 3.3,
+        "reviews": 10,
+        "recentReviews": [
+          {
+            "author": "Gabriel Delgado",
+            "rating": 3,
+            "text": "Honestly FHK does the job. Its a bit older and needs a bit of care but it pretty conveniently located next to lot 30. Not to mention that Keathley has great sunsets if you go the corner and check them..."
+          },
+          {
+            "author": "Becky Courington",
+            "rating": 1,
+            "text": "If I could give it a ZERO I would.  My daughter became incredibly ill after moving in here.  The school kept telling her there was nothing causing it and even refused to swab the obvious black mold gr..."
+          },
+          {
+            "author": "Harrington Hibbard",
+            "rating": 4,
+            "text": "let's be honest, you know you're paying less than other on-campus housing by living here. Tie your expectations to your price point"
+          }
+        ]
+      }
+    }
+  ]
+}

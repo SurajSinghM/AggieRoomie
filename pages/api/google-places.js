@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  // If placeId is provided, fetch details for a specific place
+  
   if (req.query.placeId) {
     const placeId = req.query.placeId;
     if (!process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY) {
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
   try {
     console.log('Fetching reviews for:', dormName);
     
-    // Search for the dorm
+    
     const searchQueries = [
       `${dormName} Texas A&M University`,
       `${dormName} dorm Texas A&M`,
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
       if (searchData.results && searchData.results.length > 0) {
         const result = searchData.results[0];
         
-        // Check if this is a relevant result (university, lodging, etc.)
+        
         const relevantTypes = ['university', 'lodging', 'establishment', 'point_of_interest'];
         const isRelevant = result.types.some(type => relevantTypes.includes(type));
         
@@ -74,7 +74,7 @@ export default async function handler(req, res) {
       return res.status(404).json({ message: 'No relevant place found' });
     }
 
-    // Get detailed information including reviews
+    
     const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,rating,reviews,user_ratings_total&key=${process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}`;
     const detailsResponse = await fetch(detailsUrl);
     const detailsData = await detailsResponse.json();
@@ -92,7 +92,7 @@ export default async function handler(req, res) {
       recentReviews: []
     };
 
-    // Extract recent reviews if available
+    
     if (place.reviews && place.reviews.length > 0) {
       reviewData.recentReviews = place.reviews.slice(0, 3).map(review => ({
         author: review.author_name,
@@ -109,7 +109,7 @@ export default async function handler(req, res) {
   }
 }
 
-// New handler for apartment search
+
 export async function apartmentsHandler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -117,14 +117,14 @@ export async function apartmentsHandler(req, res) {
 
   const { near, radius } = req.query;
   const searchLocation = near || 'Texas A&M University, College Station, TX';
-  const searchRadius = radius || 3000; // in meters
+  const searchRadius = radius || 3000; 
 
   if (!process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY) {
     return res.status(500).json({ message: 'Google Places API key not configured' });
   }
 
   try {
-    // Get coordinates for the search location (campus)
+    
     const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchLocation)}&key=${process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY}`;
     const geocodeResponse = await fetch(geocodeUrl);
     const geocodeData = await geocodeResponse.json();
@@ -133,7 +133,7 @@ export async function apartmentsHandler(req, res) {
     }
     const { lat, lng } = geocodeData.results[0].geometry.location;
 
-    // Run multiple textsearch queries for broader apartment coverage
+    
     const searchKeywords = [
       'apartments', 'student apartments', 'student housing', 'condos', 'lofts', 'residence', 'college apartments', 'university apartments', 'housing', 'Aspire', 'City Heights at College Station'
     ];
@@ -146,23 +146,23 @@ export async function apartmentsHandler(req, res) {
         allPlaces = allPlaces.concat(data.results);
       }
     }
-    // Deduplicate by place_id
+    
     const seen = new Set();
     let places = allPlaces.filter(place => {
       if (seen.has(place.place_id)) return false;
       seen.add(place.place_id);
       return true;
     });
-    // Limit to 20 places for Distance Matrix API
+    
     places = places.slice(0, 20);
     if (places.length === 0) {
       return res.status(404).json({ message: 'No apartments found' });
     }
 
-    // Prepare destinations for Distance Matrix
+    
     const destinations = places.map(place => `${place.geometry.location.lat},${place.geometry.location.lng}`).join('|');
     const origin = `${lat},${lng}`;
-    // Get distances for drive, bike, walk
+    
     let driveRes, bikeRes, walkRes;
     try {
       [driveRes, bikeRes, walkRes] = await Promise.all([
@@ -184,7 +184,7 @@ export async function apartmentsHandler(req, res) {
       return res.status(500).json({ message: 'Failed to parse distance data from Google API', error: err.message });
     }
 
-    // Apartment filtering logic
+    
     const apartmentTypes = [
       'apartment', 'real_estate_agency', 'premise', 'point_of_interest', 'establishment'
     ];
@@ -196,9 +196,9 @@ export async function apartmentsHandler(req, res) {
     ];
     const apartments = places
       .filter(place => {
-        // Exclude hotels, motels, inns, and similar lodging
+        
         if (place.types.some(type => excludedTypes.includes(type))) return false;
-        // Must have an apartment-related type or keyword in the name
+        
         const nameLower = place.name.toLowerCase();
         const hasType = place.types.some(type => apartmentTypes.includes(type));
         const hasKeyword = apartmentKeywords.some(kw => nameLower.includes(kw));

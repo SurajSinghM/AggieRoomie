@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "populate-reviews": "node ./scripts/fetch_reviews.js",
+    "populate-apartments": "node ./scripts/fetch_apartments.js"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.15.1",

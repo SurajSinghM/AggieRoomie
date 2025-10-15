@@ -30,7 +30,7 @@ const dormSchema = new mongoose.Schema({
         default: 0
     },
     distanceToCampus: {
-        type: Number, // in meters
+        type: Number, 
         required: true
     },
     yearBuilt: Number,

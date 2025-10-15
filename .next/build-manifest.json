@@ -31,11 +31,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/search.js"
-    ],
-    "/search-apartments": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/search-apartments.js"
     ]
   },
   "ampFirstPages": []

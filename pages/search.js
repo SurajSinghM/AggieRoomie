@@ -27,7 +27,7 @@ export default function Search() {
   const [searchResults, setSearchResults] = useState([]);
   const [googleReviews, setGoogleReviews] = useState({});
   const [expandedReviews, setExpandedReviews] = useState({});
-  const [reviewsFetched, setReviewsFetched] = useState(false);
+  const [reviewsFetched, setReviewsFetched] = useState(true); 
 
   useEffect(() => {
     const fetchDorms = async () => {
@@ -48,49 +48,18 @@ export default function Search() {
     fetchDorms();
   }, []);
 
-  // Function to fetch Google Places data
-  const fetchGooglePlacesData = async (dormName) => {
-    try {
-      console.log('Calling API for dorm:', dormName);
-      // Use our server-side API endpoint to avoid CORS issues
-      const response = await fetch(`/api/google-places?dormName=${encodeURIComponent(dormName)}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('API response for', dormName, ':', data);
-        return data;
-      } else {
-        console.log('API error for', dormName, ':', response.status, response.statusText);
-        return null;
-      }
-    } catch (error) {
-      console.error('Fetch error for', dormName, ':', error);
-      return null;
-    }
-  };
-
-  // Update useEffect to fetch Google reviews only when showResults is true
+  
+  
   useEffect(() => {
-    const fetchReviews = async () => {
-      setLoadingReviews(true);
-      const reviews = {};
-      
-      for (const dorm of dorms) {
-        const placeData = await fetchGooglePlacesData(dorm.name);
-        if (placeData) {
-          reviews[dorm.name] = placeData;
-        }
-      }
-      
-      setGoogleReviews(reviews);
-      setLoadingReviews(false);
+    if (dorms && dorms.length > 0) {
+      const map = {};
+      dorms.forEach(d => {
+        if (d.googleReview) map[d.name] = d.googleReview;
+      });
+      setGoogleReviews(map);
       setReviewsFetched(true);
-    };
-
-    if (showResults && dorms.length > 0) {
-      fetchReviews();
     }
-  }, [showResults, dorms]);
+  }, [dorms]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -101,12 +70,12 @@ export default function Search() {
   };
 
   const handleSearch = () => {
-    // Capture the current filter values as search criteria
+    
     setSearchCriteria(filters);
     setShowResults(true);
     setLoadingReviews(true);
     
-    // If reviews have already been fetched, show loading for only 1 second
+    
     if (reviewsFetched) {
       setTimeout(() => {
         setLoadingReviews(false);
@@ -116,17 +85,17 @@ export default function Search() {
 
   const calculateMatchScore = (dorm) => {
     let score = 0;
-    const maxScore = 10; // 10-point scale
+    const maxScore = 10; 
 
-    // 1. USER PREFERENCES (4 points max)
+    
     let userPreferenceScore = 0;
     
-    // Location preference (1.5 points)
+    
     if (searchCriteria.location) {
       if (dorm.location === searchCriteria.location) {
-        userPreferenceScore += 1.5; // Perfect location match
+        userPreferenceScore += 1.5; 
       } else {
-        // Partial credit for nearby locations
+        
         const locationGroups = {
           'North Campus': ['North Campus'],
           'South Campus': ['South Campus'],
@@ -139,15 +108,15 @@ export default function Search() {
         }
       }
     } else {
-      userPreferenceScore += 1.5; // No location filter = full points
+      userPreferenceScore += 1.5; 
     }
 
-    // Room type preference (1.5 points)
+    
     if (searchCriteria.roomType) {
       if (dorm.roomTypes.includes(searchCriteria.roomType)) {
-        userPreferenceScore += 1.5; // Perfect room type match
+        userPreferenceScore += 1.5; 
       } else {
-        // Partial credit for similar room types
+        
         const roomTypeSimilarity = {
           'Single': ['Single', 'Suite'],
           'Double': ['Double', 'Suite'],
@@ -159,10 +128,10 @@ export default function Search() {
         }
       }
     } else {
-      userPreferenceScore += 1.5; // No room type filter = full points
+      userPreferenceScore += 1.5; 
     }
 
-    // Budget preference (1 point)
+    
     if (searchCriteria.budget) {
       const budget = parseFloat(searchCriteria.budget);
       let dormRates = [];
@@ -180,143 +149,144 @@ export default function Search() {
         const budgetPercentage = (avgRate / budget) * 100;
 
         if (maxRate <= budget) {
-          userPreferenceScore += 1.0; // All options within budget
+          userPreferenceScore += 1.0; 
         } else if (avgRate <= budget) {
-          userPreferenceScore += 0.8; // Average within budget
+          userPreferenceScore += 0.8; 
         } else if (minRate <= budget) {
-          userPreferenceScore += 0.6; // Some options within budget
+          userPreferenceScore += 0.6; 
         } else if (budgetPercentage <= 130) {
-          userPreferenceScore += 0.3; // Slightly over budget
+          userPreferenceScore += 0.3; 
         } else if (budgetPercentage <= 150) {
-          userPreferenceScore += 0.1; // Moderately over budget
+          userPreferenceScore += 0.1; 
         }
       }
     } else {
-      userPreferenceScore += 1.0; // No budget filter = full points
+      userPreferenceScore += 1.0; 
     }
 
-    // 2. QUALITY METRICS (3.5 points max)
+    
     let qualityScore = 0;
     
-    // Google Reviews (2 points)
-    const googleData = googleReviews[dorm.name];
+  
+  
+  const googleData = dorm.googleReview || googleReviews[dorm.name];
     if (googleData && googleData.rating) {
       const rating = googleData.rating;
       const reviewCount = googleData.reviews || 0;
       
-      // Rating score (1.5 points)
+      
       if (rating >= 4.0) {
-        qualityScore += 1.5;
+        qualityScore += 2.0;
       } else if (rating >= 3.5) {
-        qualityScore += 1.2;
+        qualityScore += 1.6;
       } else if (rating >= 3.0) {
-        qualityScore += 0.9;
+        qualityScore += 1.2;
       } else if (rating >= 2.5) {
-        qualityScore += 0.6;
+        qualityScore += 0.8;
       } else if (rating >= 2.0) {
-        qualityScore += 0.3;
+        qualityScore += 0.4;
       }
 
-      // Review count bonus (0.5 points)
+      
       if (reviewCount >= 20) {
-        qualityScore += 0.5;
+        qualityScore += 1.0;
       } else if (reviewCount >= 10) {
-        qualityScore += 0.3;
+        qualityScore += 0.6;
       } else if (reviewCount >= 5) {
-        qualityScore += 0.1;
+        qualityScore += 0.2;
       }
     } else {
-      // No reviews available - neutral score
+      
       qualityScore += 0.7;
     }
 
-    // Building Age (1 point)
+    
     if (dorm.buildingInfo && dorm.buildingInfo.yearBuilt) {
       const yearBuilt = parseInt(dorm.buildingInfo.yearBuilt);
       const currentYear = new Date().getFullYear();
       const age = currentYear - yearBuilt;
 
       if (age <= 5) {
-        qualityScore += 1.0; // Very new
+        qualityScore += 1.0; 
       } else if (age <= 15) {
-        qualityScore += 0.8; // Relatively new
+        qualityScore += 0.8; 
       } else if (age <= 25) {
-        qualityScore += 0.6; // Moderately old
+        qualityScore += 0.6; 
       } else if (age <= 35) {
-        qualityScore += 0.4; // Older
+        qualityScore += 0.4; 
       } else {
-        qualityScore += 0.2; // Historic
+        qualityScore += 0.2; 
       }
     } else {
-      qualityScore += 0.5; // Unknown age - neutral score
+      qualityScore += 0.5; 
     }
 
-    // Room Type Variety (0.5 points)
+    
     const roomTypeCount = dorm.roomTypes.length;
     if (roomTypeCount >= 3) {
-      qualityScore += 0.5; // Excellent variety
+      qualityScore += 0.5; 
     } else if (roomTypeCount === 2) {
-      qualityScore += 0.3; // Good variety
+      qualityScore += 0.3; 
     } else {
-      qualityScore += 0.1; // Limited variety
+      qualityScore += 0.1; 
     }
 
-    // 3. VALUE METRICS (1.5 points max)
+    
     let valueScore = 0;
     
-    // Price competitiveness (1.5 points)
+    
     if (Array.isArray(dorm.rates) && dorm.rates.length > 0) {
       const allRates = dorm.rates.map(rate => parseFloat(rate.rate.replace('$', '').replace(',', '')));
       const avgRate = allRates.reduce((sum, rate) => sum + rate, 0) / allRates.length;
       
-      // Compare with typical dorm rates
+      
       if (avgRate <= 3000) {
-        valueScore += 1.5; // Excellent value
+        valueScore += 1.5; 
       } else if (avgRate <= 3500) {
-        valueScore += 1.2; // Good value
+        valueScore += 1.2; 
       } else if (avgRate <= 4000) {
-        valueScore += 0.9; // Average value
+        valueScore += 0.9; 
       } else if (avgRate <= 4500) {
-        valueScore += 0.6; // Below average value
+        valueScore += 0.6; 
       } else if (avgRate <= 5000) {
-        valueScore += 0.3; // Expensive
+        valueScore += 0.3; 
       } else {
-        valueScore += 0.1; // Very expensive
+        valueScore += 0.1; 
       }
     } else {
-      valueScore += 0.7; // Unknown pricing - neutral score
+      valueScore += 0.7; 
     }
 
-    // 4. ADDITIONAL FEATURES (1 point max)
+    
     let featureScore = 0;
     
-    // Location prestige (0.5 points)
+    
     const prestigiousLocations = ['North Campus', 'South Campus'];
     if (prestigiousLocations.includes(dorm.location)) {
       featureScore += 0.5;
     } else {
-      featureScore += 0.2; // Other locations still good
+      featureScore += 0.2; 
     }
 
-    // Room type prestige (0.5 points)
+    
     const premiumRoomTypes = ['Suite', 'Single'];
     if (dorm.roomTypes.some(type => premiumRoomTypes.includes(type))) {
       featureScore += 0.5;
     } else {
-      featureScore += 0.2; // Standard room types
+      featureScore += 0.2; 
     }
 
-    // Calculate final score by adding all components directly (no weighting)
+    
     const finalScore = userPreferenceScore + qualityScore + valueScore + featureScore;
 
-    return Math.min(Math.round(finalScore * 10) / 10, maxScore); // Round to 1 decimal place
+    return Math.min(Math.round(finalScore * 10) / 10, maxScore); 
   };
 
   const getMatchColor = (score) => {
-    if (score >= 8) return '#16a34a'; // Green for excellent match
-    if (score >= 6) return '#f59e0b'; // Yellow for good match
-    if (score >= 4) return '#ef4444'; // Red for poor match
-    return '#6b7280'; // Gray for very poor match
+    if (score >= 8) return '#16a34a'; 
+    if (score >= 6) return '#f59e0b'; 
+    if (score >= 4) return '#ef4444'; 
+    return '#6b7280'; 
   };
 
   const getDormRates = (dorm) => {
@@ -326,7 +296,7 @@ export default function Search() {
         rate: rate.rate
       }));
     } else if (dorm.rates && typeof dorm.rates === 'object') {
-      // If we have min/max rates, create a range display
+      
       return [
         {
           type: 'Range',
@@ -337,20 +307,20 @@ export default function Search() {
     return [];
   };
 
-  // Only calculate filtered dorms when showResults is true
+  
   const filteredDorms = showResults ? dorms
     .filter(dorm => {
-      // Filter by room type - only show dorms that have the requested room type
+      
       if (searchCriteria.roomType && !dorm.roomTypes.includes(searchCriteria.roomType)) {
         return false;
       }
       
-      // Filter by location - only show dorms in the requested location
+      
       if (searchCriteria.location && dorm.location !== searchCriteria.location) {
         return false;
       }
       
-      // Filter by budget - only show dorms with at least one option within budget
+      
       if (searchCriteria.budget) {
         const budget = parseFloat(searchCriteria.budget);
         let dormRates = [];
@@ -364,12 +334,12 @@ export default function Search() {
         if (dormRates.length > 0) {
           const minRate = Math.min(...dormRates);
           if (minRate > budget) {
-            return false; // No options within budget
+            return false; 
           }
         }
       }
       
-      return true; // Pass all filters
+      return true; 
     })
     .map(dorm => ({
       ...dorm,
@@ -378,7 +348,7 @@ export default function Search() {
     .sort((a, b) => b.matchScore - a.matchScore) : [];
 
   const renderDormCard = (dorm) => {
-    const googleData = googleReviews[dorm.name];
+  const googleData = dorm.googleReview || googleReviews[dorm.name];
     const isExpanded = expandedReviews[dorm.name] || false;
     
     return (
@@ -485,7 +455,7 @@ export default function Search() {
     );
   };
 
-  // Function to toggle review visibility for a specific dorm
+  
   const toggleReviews = (dormName) => {
     setExpandedReviews(prev => ({
       ...prev,
@@ -517,7 +487,7 @@ export default function Search() {
         <title>AggieRoomie - Find Your Perfect Dorm</title>
         <meta name="description" content="Find dorm halls at Texas A&M University" />
         
-        {/* Fonts */}
+        {}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />

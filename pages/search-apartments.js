@@ -13,10 +13,10 @@ export default function SearchApartments() {
   const googleRef = useRef(null);
   const markersRef = useRef([]);
 
-  // Default map center (Texas A&M University)
+  
   const defaultCenter = { lat: 30.6152, lng: -96.3410 };
 
-  // Fetch apartments on mount (fixed location and radius)
+  
   useEffect(() => {
     async function fetchApartments() {
       try {
@@ -33,17 +33,16 @@ export default function SearchApartments() {
     fetchApartments();
   }, []);
 
-  // Load Google Maps and add markers
+  
+  
   useEffect(() => {
     if (!mapRef.current) return;
-    if (googleRef.current) return;
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
+    let mapInstance;
+    let script = null;
+
+    function initMap() {
       googleRef.current = window.google;
-      const map = new window.google.maps.Map(mapRef.current, {
+      mapInstance = new window.google.maps.Map(mapRef.current, {
         center: defaultCenter,
         zoom: 14,
         styles: [
@@ -53,45 +52,89 @@ export default function SearchApartments() {
         streetViewControl: false,
         fullscreenControl: true,
         zoomControl: true,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+          style: window.google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+          position: window.google.maps.ControlPosition.TOP_RIGHT
+        },
+        mapTypeId: window.google.maps.MapTypeId.SATELLITE,
       });
-      markersRef.current = [];
-      apartments.forEach((apt) => {
-        if (apt.location && apt.location.lat && apt.location.lng) {
-          const marker = new window.google.maps.Marker({
-            position: { lat: apt.location.lat, lng: apt.location.lng },
-            map,
-            title: apt.name,
-            icon: {
-              url: 'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',
-              scaledSize: new window.google.maps.Size(27, 43)
-            }
-          });
-          const infoWindow = new window.google.maps.InfoWindow({
-            content: `
-              <div style='font-weight:700;font-size:16px;'>${apt.name}</div>
-              <div style='font-size:13px;'>${apt.address}</div>
-              ${apt.rating ? `<div style='color:#ffd700;font-weight:600;font-size:13px;'>★ ${apt.rating} (${apt.userRatingsTotal})</div>` : ''}
-              <button style='color:#800000;font-weight:600;font-size:13px;text-decoration:underline;margin-top:4px;display:inline-block;background:none;border:none;cursor:pointer' onclick="window.dispatchEvent(new CustomEvent('showAptDetails', { detail: '${apt.placeId}' }))">More Details</button>
-            `
-          });
-          marker.addListener('click', () => {
-            infoWindow.open(map, marker);
-          });
-          markersRef.current.push(marker);
-        }
-      });
-    };
-    document.head.appendChild(script);
-    // Cleanup
+      
+      mapRef.current._map = mapInstance;
+    }
+
+    if (window.google && window.google.maps) {
+      initMap();
+    } else {
+      script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+      script.async = true;
+      script.defer = true;
+      script.onload = initMap;
+      document.head.appendChild(script);
+    }
+
     return () => {
-      if (markersRef.current) {
-        markersRef.current.forEach(marker => marker.setMap(null));
+      
+      if (script && script.parentNode) script.parentNode.removeChild(script);
+      
+      if (mapRef.current && mapRef.current._map) {
+        try { mapRef.current._map = null; } catch (e) {}
       }
     };
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  
+  useEffect(() => {
+    const mapInstance = mapRef.current && mapRef.current._map ? mapRef.current._map : null;
+    if (!mapInstance || !window.google) return;
+
+    
+    if (markersRef.current && markersRef.current.length > 0) {
+      markersRef.current.forEach(m => m.setMap(null));
+      markersRef.current = [];
+    }
+
+    const newMarkers = [];
+    apartments.forEach((apt) => {
+      if (apt.location && typeof apt.location.lat === 'number' && typeof apt.location.lng === 'number') {
+        const marker = new window.google.maps.Marker({
+          position: { lat: apt.location.lat, lng: apt.location.lng },
+          map: mapInstance,
+          title: apt.name,
+          icon: {
+            url: 'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',
+            scaledSize: new window.google.maps.Size(27, 43)
+          }
+        });
+
+        const infoWindow = new window.google.maps.InfoWindow({
+          content: `
+            <div style='font-weight:700;font-size:16px;'>${apt.name}</div>
+            <div style='font-size:13px;'>${apt.address}</div>
+            ${apt.rating ? `<div style='color:#ffd700;font-weight:600;font-size:13px;'>★ ${apt.rating} (${apt.userRatingsTotal})</div>` : ''}
+            <button style='color:#800000;font-weight:600;font-size:13px;text-decoration:underline;margin-top:4px;display:inline-block;background:none;border:none;cursor:pointer' onclick="window.dispatchEvent(new CustomEvent('showAptDetails', { detail: '${apt.placeId}' }))">More Details</button>
+          `
+        });
+
+        marker.addListener('click', () => {
+          infoWindow.open(mapInstance, marker);
+        });
+
+        newMarkers.push(marker);
+      }
+    });
+
+    markersRef.current = newMarkers;
+
+    return () => {
+      newMarkers.forEach(m => m.setMap(null));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apartments]);
 
-  // Listen for 'showAptDetails' event from map infoWindow button
+  
   useEffect(() => {
     const handler = (e) => {
       if (e.detail) handleShowDetails(e.detail);
@@ -101,24 +144,46 @@ export default function SearchApartments() {
     // eslint-disable-next-line
   }, []);
 
-  // Fetch Google Places details for a placeId
+  
   const handleShowDetails = async (placeId) => {
     setDetailsLoading(true);
     setAptDetails(null);
-    setSelectedApt(apartments.find(a => a.placeId === placeId));
+    
+    const local = apartments.find(a => a.placeId === placeId);
+    if (local) {
+      setSelectedApt(local);
+      
+      const detailsFromLocal = {
+        name: local.name,
+        formatted_address: local.address || null,
+        formatted_phone_number: local.phone || null,
+        website: local.website || null,
+        rating: local.rating || null,
+        user_ratings_total: local.userRatingsTotal || null,
+        reviews: (local.googleReview && local.googleReview.recentReviews) ? local.googleReview.recentReviews.map(r => ({ author_name: r.author, rating: r.rating, text: r.text })) : null,
+        photos: local.photoUrl ? [{ photo_reference: null }] : null
+      };
+      setAptDetails(detailsFromLocal);
+      setDetailsLoading(false);
+      return;
+    }
+
+    
+    setSelectedApt(null);
     try {
       const res = await fetch(`/api/google-places?placeId=${placeId}`);
       if (!res.ok) throw new Error('Failed to fetch details');
       const data = await res.json();
       setAptDetails(data);
-    } catch {
+    } catch (err) {
+      console.warn('Failed to fetch place details:', err && err.message);
       setAptDetails(null);
     } finally {
       setDetailsLoading(false);
     }
   };
 
-  // Modal close
+  
   const handleCloseModal = () => {
     setSelectedApt(null);
     setAptDetails(null);
@@ -155,7 +220,7 @@ export default function SearchApartments() {
       </nav>
       <main className={styles.main}>
         <div style={{ display: 'flex', height: '75vh', minHeight: 500 }}>
-          {/* Sidebar List */}
+          {}
           <div style={{ width: 420, maxWidth: '100%', overflowY: 'auto', background: '#181c20', color: '#fff', borderRadius: 24, marginRight: 24, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
             <div style={{ fontWeight: 800, fontSize: 36, color: '#fff', textAlign: 'center', margin: '32px 0 8px 0' }}>Apartment Search</div>
             <div style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: 24, fontSize: 17 }}>
@@ -171,7 +236,7 @@ export default function SearchApartments() {
                 <div>
                   {apartments.map((apt, idx) => (
                     <div key={apt.placeId || idx} style={{ display: 'flex', alignItems: 'center', background: '#23272b', borderRadius: 16, margin: '16px 16px 0 16px', boxShadow: '0 2px 8px rgba(0,0,0,0.10)', padding: 16 }}>
-                      {/* Apartment photo */}
+                      {}
                       {apt.photoUrl ? (
                         <img
                           src={apt.photoUrl}
@@ -228,12 +293,12 @@ export default function SearchApartments() {
               )}
             </div>
           </div>
-          {/* Map View */}
+          {}
           <div style={{ flex: 1, minWidth: 0, borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
             <div ref={mapRef} style={{ height: '100%', width: '100%' }} id="apartment-map"></div>
           </div>
         </div>
-        {/* Modal for More Details */}
+        {}
         {selectedApt && (
           <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.45)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={handleCloseModal}>
             <div style={{ background: '#fff', borderRadius: 18, minWidth: 340, maxWidth: 420, padding: 32, boxShadow: '0 8px 32px rgba(0,0,0,0.18)', position: 'relative', fontFamily: 'Inter, Arial, sans-serif' }} onClick={e => e.stopPropagation()}>
