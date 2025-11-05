@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}"
+self.__REACT_LOADABLE_MANIFEST="{\"map.js -> leaflet\":{\"id\":\"map.js -> leaflet\",\"files\":[\"static/chunks/node_modules_leaflet_dist_leaflet-src_js.js\"]},\"map.js -> react-leaflet\":{\"id\":\"map.js -> react-leaflet\",\"files\":[\"static/chunks/node_modules_react-leaflet_lib_index_js.js\"]}}"

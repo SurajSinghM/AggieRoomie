@@ -83,6 +83,14 @@ export default function Search() {
     }
   };
 
+  // Generate TAMU residence life URL for a dorm
+  const getResLifeUrl = (dormName) => {
+    if (!dormName) return '';
+    // Convert to lowercase and remove "Hall" if present
+    const name = dormName.toLowerCase().replace(/\s+hall\s*$/, '').trim();
+    return `https://reslife.tamu.edu/${name}/`;
+  };
+
   const calculateMatchScore = (dorm) => {
     let score = 0;
     const maxScore = 10; 
@@ -355,7 +363,18 @@ export default function Search() {
       <div key={dorm.name} className={styles.dormCard}>
         <div className={styles.cardHeader}>
           <div className={styles.cardTitle}>
-            <h3>{dorm.name}</h3>
+            <h3>
+              {dorm.name}
+              <a 
+                href={getResLifeUrl(dorm.name)} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={styles.cardOfficialLink}
+                onClick={(e) => e.stopPropagation()}
+              >
+                🔗 link
+              </a>
+            </h3>
             <div className={styles.matchScoreContainer}>
               <span className={styles.matchScoreLabel}>Match Score</span>
               <div 

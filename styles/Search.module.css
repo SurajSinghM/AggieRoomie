@@ -313,12 +313,47 @@
 }
 
 .cardTitle h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
   margin: 0;
   color: var(--neutral-900);
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
   letter-spacing: -0.025em;
   flex: 1;
+}
+
+.cardOfficialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  background: transparent;
+  color: var(--aggie-maroon);
+  padding: var(--space-1) var(--space-2);
+  border: 1.5px solid var(--aggie-maroon);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-left: var(--space-2);
+}
+
+.cardOfficialLink:hover {
+  background: var(--aggie-maroon);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+}
+
+.cardOfficialLink:active {
+  transform: translateY(0);
 }
 
 .cardHeaderRight {

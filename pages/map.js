@@ -1,20 +1,58 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import styles from '../styles/Map.module.css';
+
+// Dynamically import MapContainer to avoid SSR issues with Leaflet
+const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
 
 export default function Map() {
   const router = useRouter();
   const [dorms, setDorms] = useState([]);
   const [selectedDorm, setSelectedDorm] = useState(null);
-  
+  const [showDetailsCard, setShowDetailsCard] = useState(false);
+  const [detailsDorm, setDetailsDorm] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [map, setMap] = useState(null);
-  const [markers, setMarkers] = useState([]);
-  const [google, setGoogle] = useState(null);
-  const markerMapRef = useRef({});
+  const [mounted, setMounted] = useState(false);
+  const [leafletLoaded, setLeafletLoaded] = useState(false);
+
+  // Center coordinates for Texas A&M University
+  const center = [30.6150, -96.3400];
+  const zoom = 16;
+
+  useEffect(() => {
+    setMounted(true);
+    // Wait for Leaflet to be available
+    const checkLeaflet = async () => {
+      if (typeof window === 'undefined') return;
+      
+      // Try to get Leaflet from window first (if loaded via script)
+      if (window.L) {
+        setLeafletLoaded(true);
+        return;
+      }
+      
+      // Otherwise import it
+      try {
+        const leaflet = await import('leaflet');
+        if (leaflet.default) {
+          window.L = leaflet.default;
+          setLeafletLoaded(true);
+        }
+      } catch (e) {
+        console.warn('Failed to load Leaflet:', e);
+        // Retry
+        setTimeout(checkLeaflet, 100);
+      }
+    };
+    checkLeaflet();
+  }, []);
 
   useEffect(() => {
     const fetchDorms = async () => {
@@ -26,7 +64,6 @@ export default function Map() {
         const data = await response.json();
         setDorms(data);
 
-        
         if (router.query.dorm) {
           const dorm = data.find(d => d.name === router.query.dorm);
           if (dorm) {
@@ -43,199 +80,57 @@ export default function Map() {
     fetchDorms();
   }, [router.query.dorm]);
 
-  useEffect(() => {
-    const initMap = async () => {
-      try {
-        
-        if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
-          throw new Error('Google Maps API key not configured');
-        }
-
-        
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        
-        const mapContainer = document.getElementById('map');
-        if (!mapContainer) {
-          
-          setTimeout(() => initMap(), 500);
-          return;
-        }
-
-        
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-        script.async = true;
-        script.defer = true;
-        
-        script.onload = () => {
-          try {
-            const mapInstance = new window.google.maps.Map(mapContainer, {
-              center: { lat: 30.6150, lng: -96.3400 }, 
-              zoom: 16,
-              styles: [
-                {
-                  featureType: 'poi',
-                  elementType: 'labels',
-                  stylers: [{ visibility: 'off' }]
-                },
-                {
-                  featureType: 'transit',
-                  elementType: 'labels',
-                  stylers: [{ visibility: 'off' }]
-                }
-              ],
-              mapTypeControl: true,
-              mapTypeControlOptions: {
-                style: window.google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-                position: window.google.maps.ControlPosition.TOP_RIGHT
-              },
-              streetViewControl: false,
-              fullscreenControl: true,
-              zoomControl: true,
-              mapTypeId: window.google.maps.MapTypeId.SATELLITE
-            });
-
-            setMap(mapInstance);
-            setGoogle(window.google);
-
-            
-          } catch (mapError) {
-            setError(`Failed to create map: ${mapError.message}`);
-          }
-        };
-
-        script.onerror = (error) => {
-          setError('Failed to load Google Maps API - check your API key and internet connection');
-        };
-
-        document.head.appendChild(script);
-      } catch (err) {
-        setError(`Failed to load Google Maps: ${err.message}`);
-      }
-    };
-
-    if (!map && !google) {
-      initMap();
-    }
-  }, [map, google]);
-
-  useEffect(() => {
-    if (map && google && dorms.length > 0) {
-      
-      markers.forEach(marker => marker.setMap(null));
-      const newMarkers = [];
-
-      
-      dorms.forEach(dorm => {
-        if (dorm.coordinates && dorm.coordinates.lat && dorm.coordinates.lng) {
-          const marker = new google.maps.Marker({
-            position: { 
-              lat: parseFloat(dorm.coordinates.lat), 
-              lng: parseFloat(dorm.coordinates.lng) 
-            },
-            map,
-            title: dorm.name,
-            animation: google.maps.Animation.DROP,
-            icon: {
-              url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                <svg width="24" height="40" viewBox="0 0 24 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 0C5.37 0 0 5.37 0 12c0 8.5 12 28 12 28s12-19.5 12-28c0-6.63-5.37-12-12-12z" fill="#500000"/>
-                  <circle cx="12" cy="12" r="6" fill="white"/>
-                  <circle cx="12" cy="12" r="3" fill="#500000"/>
-                </svg>
-              `),
-              scaledSize: new google.maps.Size(24, 40),
-              anchor: new google.maps.Point(12, 40)
-            }
-          });
-
-          
-          const safeId = `open-full-${dorm.name.replace(/[^a-z0-9]/gi, '-')}`;
-          const infoContentParts = [];
-          infoContentParts.push(`<div class="${styles.infoWindow}">`);
-          infoContentParts.push(`<h3>${dorm.name}</h3>`);
-          infoContentParts.push(`<p>${dorm.location || ''}</p>`);
-          infoContentParts.push(`<p><strong>Room Types:</strong> ${dorm.roomTypes ? dorm.roomTypes.join(', ') : 'N/A'}</p>`);
-
-          if (dorm.googleReview) {
-            const gr = dorm.googleReview;
-            infoContentParts.push(`<p><strong>Rating:</strong> ${gr.rating ?? 'N/A'} (${gr.reviews ?? 0} reviews)</p>`);
-            if (gr.recentReviews && gr.recentReviews.length > 0) {
-              infoContentParts.push(`<div class="${styles.recentReviews}"><strong>Recent reviews</strong><ul>`);
-              gr.recentReviews.slice(0,3).forEach(r => {
-                const author = r.author ? `<em>${r.author}</em>: ` : '';
-                const text = r.text ? r.text.replace(/</g, '&lt;') : '';
-                infoContentParts.push(`<li>${author}${text}</li>`);
-              });
-              infoContentParts.push(`</ul></div>`);
-            }
-          }
-
-          infoContentParts.push(`<div class="${styles.infoWindowActions}">`);
-          infoContentParts.push(`<button id="${safeId}" class="btn btn-primary">Open full details</button>`);
-          infoContentParts.push(`</div></div>`);
-
-          const infoWindow = new google.maps.InfoWindow({ content: infoContentParts.join('') });
-
-          
-          google.maps.event.addListener(infoWindow, 'domready', () => {
-            try {
-              const btn = document.getElementById(safeId);
-              if (btn && !btn.dataset.bound) {
-                btn.addEventListener('click', () => {
-                  
-                  try { router.push(`/search?dorm=${encodeURIComponent(dorm.name)}`); } catch (e) { window.location.href = `/search?dorm=${encodeURIComponent(dorm.name)}`; }
-                });
-                btn.dataset.bound = '1';
-              }
-            } catch (e) {
-              
-            }
-          });
-
-          marker.addListener('click', () => {
-            infoWindow.open(map, marker);
-            setSelectedDorm(dorm);
-          });
-
-          newMarkers.push(marker);
-          
-          try { markerMapRef.current[dorm.name] = { marker, infoWindow }; } catch (e) {}
-        }
-      });
-
-      setMarkers(newMarkers);
-    }
-  }, [map, google, dorms]);
-
-  useEffect(() => {
-    if (map && selectedDorm && selectedDorm.coordinates) {
-      const position = { 
-        lat: parseFloat(selectedDorm.coordinates.lat), 
-        lng: parseFloat(selectedDorm.coordinates.lng) 
-      };
-      map.panTo(position);
-      map.setZoom(17);
-    }
-  }, [map, selectedDorm]);
-
-  
-  
-
-  
-
   const handleDormClick = (dorm) => {
     setSelectedDorm(dorm);
-    if (map && dorm.coordinates) {
-      const position = { 
-        lat: parseFloat(dorm.coordinates.lat), 
-        lng: parseFloat(dorm.coordinates.lng) 
-      };
-      map.panTo(position);
-      map.setZoom(17);
-    }
   };
+
+  const handleShowDetails = (dorm) => {
+    // Prevent any navigation
+    if (typeof window !== 'undefined') {
+      window.event?.preventDefault?.();
+    }
+    setDetailsDorm(dorm);
+    setShowDetailsCard(true);
+  };
+
+  const handleCloseDetails = () => {
+    setShowDetailsCard(false);
+    setDetailsDorm(null);
+  };
+
+  // Generate TAMU residence life URL for a dorm
+  const getResLifeUrl = (dormName) => {
+    if (!dormName) return '';
+    // Convert to lowercase and remove "Hall" if present
+    const name = dormName.toLowerCase().replace(/\s+hall\s*$/, '').trim();
+    return `https://reslife.tamu.edu/${name}/`;
+  };
+
+  // Custom icon for markers - memoized and only created when Leaflet is loaded
+  const customIcon = useMemo(() => {
+    if (typeof window === 'undefined' || !window.L || !leafletLoaded) {
+      return undefined;
+    }
+    
+    try {
+      const L = window.L;
+      return L.divIcon({
+        className: 'custom-marker',
+        html: `
+          <svg width="32" height="40" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 0C7.163 0 0 7.163 0 16c0 11 16 24 16 24s16-13 16-24C32 7.163 24.837 0 16 0z" fill="#500000" stroke="#ffffff" stroke-width="2"/>
+            <circle cx="16" cy="16" r="6" fill="#ffffff"/>
+          </svg>
+        `,
+        iconSize: [32, 40],
+        iconAnchor: [16, 40],
+        popupAnchor: [0, -40],
+      });
+    } catch (e) {
+      console.warn('Failed to create custom icon:', e);
+      return undefined;
+    }
+  }, [leafletLoaded]);
 
   if (loading) {
     return (
@@ -251,7 +146,7 @@ export default function Map() {
       <div className={styles.error}>
         <div className={styles.errorIcon}>⚠️</div>
         <p>Error: {error}</p>
-        <p>Please check your Google Maps API key configuration.</p>
+        <p>Please check your connection and try again.</p>
       </div>
     );
   }
@@ -261,11 +156,10 @@ export default function Map() {
       <Head>
         <title>Campus Map - AggieRoomie</title>
         <meta name="description" content="View dorm locations on Texas A&M campus map" />
-        
-        {}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossOrigin="" />
       </Head>
 
       <nav className={styles.navbar}>
@@ -302,8 +196,81 @@ export default function Map() {
         </div>
 
         <div className={styles.mapContainer}>
-          <div id="map" className={styles.map}></div>
-            <div className={styles.dormList}>
+          {mounted && (
+            <MapContainer
+              center={selectedDorm && selectedDorm.coordinates 
+                ? [parseFloat(selectedDorm.coordinates.lat), parseFloat(selectedDorm.coordinates.lng)]
+                : center}
+              zoom={selectedDorm ? 17 : zoom}
+              style={{ height: '100%', width: '100%', zIndex: 0 }}
+              scrollWheelZoom={true}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {dorms.map((dorm) => {
+                if (!dorm.coordinates || !dorm.coordinates.lat || !dorm.coordinates.lng) return null;
+                
+                const position = [parseFloat(dorm.coordinates.lat), parseFloat(dorm.coordinates.lng)];
+                
+                return (
+                  <Marker
+                    key={dorm.name}
+                    position={position}
+                    icon={customIcon}
+                  >
+                    <Popup>
+                      <div className={styles.infoWindow}>
+                        <h3>{dorm.name}</h3>
+                        <p>{dorm.location || ''}</p>
+                        <p><strong>Room Types:</strong> {dorm.roomTypes ? dorm.roomTypes.join(', ') : 'N/A'}</p>
+                        {dorm.googleReview && (
+                          <>
+                            <p><strong>Rating:</strong> {dorm.googleReview.rating ?? 'N/A'} ({dorm.googleReview.reviews ?? 0} reviews)</p>
+                            {dorm.googleReview.recentReviews && dorm.googleReview.recentReviews.length > 0 && (
+                              <div className={styles.recentReviews}>
+                                <strong>Recent reviews</strong>
+                                <ul>
+                                  {dorm.googleReview.recentReviews.slice(0, 3).map((r, idx) => (
+                                    <li key={idx}>
+                                      {r.author ? <em>{r.author}</em> : ''}: {r.text ? r.text.replace(/</g, '&lt;') : ''}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </>
+                        )}
+                        <div className={styles.infoWindowActions}>
+                          <button 
+                            type="button"
+                            className={styles.infoButton}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (e.nativeEvent) {
+                                e.nativeEvent.stopImmediatePropagation();
+                              }
+                              handleShowDetails(dorm);
+                              return false;
+                            }}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
+                          >
+                            More Details
+                          </button>
+                        </div>
+                      </div>
+                    </Popup>
+                  </Marker>
+                );
+              })}
+            </MapContainer>
+          )}
+          <div className={styles.dormList}>
             <h2>Dorms ({dorms.length})</h2>
             <div className={styles.dormGrid}>
               {dorms.map((dorm) => (
@@ -319,25 +286,18 @@ export default function Map() {
                       <p><strong>Room Types:</strong> {dorm.roomTypes.join(', ')}</p>
                     </div>
                   )}
-                    <div className={styles.actions}>
-                      <button
-                        className={styles.viewDetailsButton}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          
-                          const entry = markerMapRef.current && markerMapRef.current[dorm.name];
-                          if (entry && entry.infoWindow && entry.marker && map) {
-                            entry.infoWindow.open(map, entry.marker);
-                            setSelectedDorm(dorm);
-                          } else {
-                            
-                            try { router.push(`/search?dorm=${encodeURIComponent(dorm.name)}`); } catch (err) { window.location.href = `/search?dorm=${encodeURIComponent(dorm.name)}`; }
-                          }
-                        }}
-                      >
-                        View Details
-                      </button>
-                    </div>
+                  <div className={styles.actions}>
+                    <button
+                      className={styles.viewDetailsButton}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleShowDetails(dorm);
+                      }}
+                    >
+                      View Details
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -345,9 +305,119 @@ export default function Map() {
         </div>
       </main>
 
+      {/* Details Popout Panel */}
+      {showDetailsCard && detailsDorm && (
+        <>
+          <div className={styles.modalOverlay} onClick={handleCloseDetails}></div>
+          <div className={styles.detailsModal}>
+            <div className={styles.modalHeaderBar}>
+              <button className={styles.modalClose} onClick={handleCloseDetails}>&times;</button>
+            </div>
+            <div className={styles.modalContent}>
+              <div className={styles.modalHeader}>
+                <h2 className={styles.modalTitle}>
+                  {detailsDorm.name}
+                  <a 
+                    href={getResLifeUrl(detailsDorm.name)} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={styles.modalOfficialLink}
+                  >
+                    🔗 link
+                  </a>
+                </h2>
+              </div>
+
+              <div className={styles.modalSection}>
+                <div className={styles.modalInfoRow}>
+                  <span className={styles.modalIcon}>📍</span>
+                  <span className={styles.modalText}>{detailsDorm.location || 'Location not specified'}</span>
+                </div>
+              </div>
+
+              {detailsDorm.roomTypes && detailsDorm.roomTypes.length > 0 && (
+                <div className={styles.modalSection}>
+                  <h3 className={styles.modalSectionTitle}>Room Types</h3>
+                  <div className={styles.modalTags}>
+                    {detailsDorm.roomTypes.map((type, idx) => (
+                      <span key={idx} className={styles.modalTag}>{type}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {detailsDorm.rates && detailsDorm.rates.length > 0 && (
+                <div className={styles.modalSection}>
+                  <h3 className={styles.modalSectionTitle}>Rates</h3>
+                  <div className={styles.modalRates}>
+                    {detailsDorm.rates.map((rate, idx) => (
+                      <div key={idx} className={styles.modalRateItem}>
+                        <span className={styles.modalRateType}>{rate.type}:</span>
+                        <span className={styles.modalRateValue}>{rate.rate}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {detailsDorm.buildingInfo && (
+                <div className={styles.modalSection}>
+                  <h3 className={styles.modalSectionTitle}>Building Information</h3>
+                  {detailsDorm.buildingInfo.yearBuilt && (
+                    <div className={styles.modalInfoRow}>
+                      <span className={styles.modalIcon}>🏗️</span>
+                      <span className={styles.modalText}>Year Built: {detailsDorm.buildingInfo.yearBuilt}</span>
+                    </div>
+                  )}
+                  {detailsDorm.buildingInfo.bathroomType && (
+                    <div className={styles.modalInfoRow}>
+                      <span className={styles.modalIcon}>🚿</span>
+                      <span className={styles.modalText}>Bathroom: {detailsDorm.buildingInfo.bathroomType}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {detailsDorm.googleReview && (
+                <div className={styles.modalSection}>
+                  <h3 className={styles.modalSectionTitle}>Reviews</h3>
+                  <div className={styles.modalRating}>
+                    <span className={styles.modalRatingStars}>
+                      {'★'.repeat(Math.floor(detailsDorm.googleReview.rating || 0))}
+                      {'☆'.repeat(5 - Math.floor(detailsDorm.googleReview.rating || 0))}
+                    </span>
+                    <span className={styles.modalRatingValue}>
+                      {detailsDorm.googleReview.rating?.toFixed(1) || 'N/A'}
+                    </span>
+                    <span className={styles.modalRatingCount}>
+                      ({detailsDorm.googleReview.reviews || 0} reviews)
+                    </span>
+                  </div>
+                  {detailsDorm.googleReview.recentReviews && detailsDorm.googleReview.recentReviews.length > 0 && (
+                    <div className={styles.modalReviews}>
+                      {detailsDorm.googleReview.recentReviews.slice(0, 3).map((review, idx) => (
+                        <div key={idx} className={styles.modalReviewItem}>
+                          <div className={styles.modalReviewHeader}>
+                            <span className={styles.modalReviewAuthor}>{review.author || 'Anonymous'}</span>
+                            <span className={styles.modalReviewRating}>
+                              {'★'.repeat(review.rating || 0)}
+                            </span>
+                          </div>
+                          <p className={styles.modalReviewText}>{review.text || ''}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
       <footer className={styles.footer}>
         <p>© 2025 AggieRoomie. Suraj Singh M</p>
       </footer>
     </div>
   );
-} 
+}

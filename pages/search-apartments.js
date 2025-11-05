@@ -1,7 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import styles from '../styles/Search.module.css';
+
+// Dynamically import MapContainer to avoid SSR issues with Leaflet
+const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
 
 export default function SearchApartments() {
   const [apartments, setApartments] = useState([]);
@@ -9,14 +16,39 @@ export default function SearchApartments() {
   const [aptDetails, setAptDetails] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
-  const mapRef = useRef(null);
-  const googleRef = useRef(null);
-  const markersRef = useRef([]);
+  const [mounted, setMounted] = useState(false);
+  const [leafletLoaded, setLeafletLoaded] = useState(false);
 
-  
-  const defaultCenter = { lat: 30.6152, lng: -96.3410 };
+  const defaultCenter = [30.6152, -96.3410];
 
-  
+  useEffect(() => {
+    setMounted(true);
+    // Wait for Leaflet to be available
+    const checkLeaflet = async () => {
+      if (typeof window === 'undefined') return;
+      
+      // Try to get Leaflet from window first (if loaded via script)
+      if (window.L) {
+        setLeafletLoaded(true);
+        return;
+      }
+      
+      // Otherwise import it
+      try {
+        const leaflet = await import('leaflet');
+        if (leaflet.default) {
+          window.L = leaflet.default;
+          setLeafletLoaded(true);
+        }
+      } catch (e) {
+        console.warn('Failed to load Leaflet:', e);
+        // Retry
+        setTimeout(checkLeaflet, 100);
+      }
+    };
+    checkLeaflet();
+  }, []);
+
   useEffect(() => {
     async function fetchApartments() {
       try {
@@ -33,118 +65,14 @@ export default function SearchApartments() {
     fetchApartments();
   }, []);
 
-  
-  
-  useEffect(() => {
-    if (!mapRef.current) return;
-    let mapInstance;
-    let script = null;
-
-    function initMap() {
-      googleRef.current = window.google;
-      mapInstance = new window.google.maps.Map(mapRef.current, {
-        center: defaultCenter,
-        zoom: 14,
-        styles: [
-          { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-          { featureType: 'transit', elementType: 'labels', stylers: [{ visibility: 'off' }] }
-        ],
-        streetViewControl: false,
-        fullscreenControl: true,
-        zoomControl: true,
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-          style: window.google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-          position: window.google.maps.ControlPosition.TOP_RIGHT
-        },
-        mapTypeId: window.google.maps.MapTypeId.SATELLITE,
-      });
-      
-      mapRef.current._map = mapInstance;
-    }
-
-    if (window.google && window.google.maps) {
-      initMap();
-    } else {
-      script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
-      script.async = true;
-      script.defer = true;
-      script.onload = initMap;
-      document.head.appendChild(script);
-    }
-
-    return () => {
-      
-      if (script && script.parentNode) script.parentNode.removeChild(script);
-      
-      if (mapRef.current && mapRef.current._map) {
-        try { mapRef.current._map = null; } catch (e) {}
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  
-  useEffect(() => {
-    const mapInstance = mapRef.current && mapRef.current._map ? mapRef.current._map : null;
-    if (!mapInstance || !window.google) return;
-
-    
-    if (markersRef.current && markersRef.current.length > 0) {
-      markersRef.current.forEach(m => m.setMap(null));
-      markersRef.current = [];
-    }
-
-    const newMarkers = [];
-    apartments.forEach((apt) => {
-      if (apt.location && typeof apt.location.lat === 'number' && typeof apt.location.lng === 'number') {
-        const marker = new window.google.maps.Marker({
-          position: { lat: apt.location.lat, lng: apt.location.lng },
-          map: mapInstance,
-          title: apt.name,
-          icon: {
-            url: 'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',
-            scaledSize: new window.google.maps.Size(27, 43)
-          }
-        });
-
-        const infoWindow = new window.google.maps.InfoWindow({
-          content: `
-            <div style='font-weight:700;font-size:16px;'>${apt.name}</div>
-            <div style='font-size:13px;'>${apt.address}</div>
-            ${apt.rating ? `<div style='color:#ffd700;font-weight:600;font-size:13px;'>★ ${apt.rating} (${apt.userRatingsTotal})</div>` : ''}
-            <button style='color:#800000;font-weight:600;font-size:13px;text-decoration:underline;margin-top:4px;display:inline-block;background:none;border:none;cursor:pointer' onclick="window.dispatchEvent(new CustomEvent('showAptDetails', { detail: '${apt.placeId}' }))">More Details</button>
-          `
-        });
-
-        marker.addListener('click', () => {
-          infoWindow.open(mapInstance, marker);
-        });
-
-        newMarkers.push(marker);
-      }
-    });
-
-    markersRef.current = newMarkers;
-
-    return () => {
-      newMarkers.forEach(m => m.setMap(null));
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apartments]);
-
-  
   useEffect(() => {
     const handler = (e) => {
       if (e.detail) handleShowDetails(e.detail);
     };
     window.addEventListener('showAptDetails', handler);
     return () => window.removeEventListener('showAptDetails', handler);
-    // eslint-disable-next-line
   }, []);
 
-  
   const handleShowDetails = async (placeId) => {
     setDetailsLoading(true);
     setAptDetails(null);
@@ -168,7 +96,6 @@ export default function SearchApartments() {
       return;
     }
 
-    
     setSelectedApt(null);
     try {
       const res = await fetch(`/api/google-places?placeId=${placeId}`);
@@ -183,16 +110,49 @@ export default function SearchApartments() {
     }
   };
 
-  
   const handleCloseModal = () => {
     setSelectedApt(null);
     setAptDetails(null);
   };
 
+  // Custom icon for apartment markers - memoized and only created when Leaflet is loaded
+  const apartmentIcon = useMemo(() => {
+    if (typeof window === 'undefined' || !window.L || !leafletLoaded) {
+      return undefined;
+    }
+    
+    try {
+      const L = window.L;
+      return L.divIcon({
+        className: 'custom-apartment-marker',
+        html: `
+          <div style="
+            width: 32px;
+            height: 32px;
+            background: #1976d2;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+          ">🏢</div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      });
+    } catch (e) {
+      console.warn('Failed to create apartment icon:', e);
+      return undefined;
+    }
+  }, [leafletLoaded]);
+
   return (
     <div className={styles.container}>
       <Head>
         <title>Apartment Search | AggieRoomie</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossOrigin="" />
       </Head>
       <nav className={styles.navbar}>
         <div className={styles.navContent}>
@@ -220,7 +180,6 @@ export default function SearchApartments() {
       </nav>
       <main className={styles.main}>
         <div style={{ display: 'flex', height: '75vh', minHeight: 500 }}>
-          {}
           <div style={{ width: 420, maxWidth: '100%', overflowY: 'auto', background: '#181c20', color: '#fff', borderRadius: 24, marginRight: 24, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
             <div style={{ fontWeight: 800, fontSize: 36, color: '#fff', textAlign: 'center', margin: '32px 0 8px 0' }}>Apartment Search</div>
             <div style={{ color: '#b3b3b3', textAlign: 'center', marginBottom: 24, fontSize: 17 }}>
@@ -236,7 +195,6 @@ export default function SearchApartments() {
                 <div>
                   {apartments.map((apt, idx) => (
                     <div key={apt.placeId || idx} style={{ display: 'flex', alignItems: 'center', background: '#23272b', borderRadius: 16, margin: '16px 16px 0 16px', boxShadow: '0 2px 8px rgba(0,0,0,0.10)', padding: 16 }}>
-                      {}
                       {apt.photoUrl ? (
                         <img
                           src={apt.photoUrl}
@@ -293,12 +251,53 @@ export default function SearchApartments() {
               )}
             </div>
           </div>
-          {}
-          <div style={{ flex: 1, minWidth: 0, borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
-            <div ref={mapRef} style={{ height: '100%', width: '100%' }} id="apartment-map"></div>
-          </div>
+          {mounted && (
+            <div style={{ flex: 1, minWidth: 0, borderRadius: 24, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
+              <MapContainer
+                center={defaultCenter}
+                zoom={14}
+                style={{ height: '100%', width: '100%', zIndex: 0 }}
+                scrollWheelZoom={true}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                {apartments.map((apt) => {
+                  if (!apt.location || typeof apt.location.lat !== 'number' || typeof apt.location.lng !== 'number') return null;
+                  
+                  return (
+                    <Marker
+                      key={apt.placeId || apt.name}
+                      position={[apt.location.lat, apt.location.lng]}
+                      icon={apartmentIcon}
+                    >
+                      <Popup>
+                        <div style={{ fontWeight: 700, fontSize: 16 }}>
+                          <div>{apt.name}</div>
+                          <div style={{ fontSize: 13, marginTop: 4 }}>{apt.address}</div>
+                          {apt.rating && (
+                            <div style={{ color: '#ffd700', fontWeight: 600, fontSize: 13, marginTop: 4 }}>
+                              ★ {apt.rating} ({apt.userRatingsTotal})
+                            </div>
+                          )}
+                          <button
+                            style={{ color: '#800000', fontWeight: 600, fontSize: 13, textDecoration: 'underline', marginTop: 4, display: 'inline-block', background: 'none', border: 'none', cursor: 'pointer' }}
+                            onClick={() => {
+                              window.dispatchEvent(new CustomEvent('showAptDetails', { detail: apt.placeId }));
+                            }}
+                          >
+                            More Details
+                          </button>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  );
+                })}
+              </MapContainer>
+            </div>
+          )}
         </div>
-        {}
         {selectedApt && (
           <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.45)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={handleCloseModal}>
             <div style={{ background: '#fff', borderRadius: 18, minWidth: 340, maxWidth: 420, padding: 32, boxShadow: '0 8px 32px rgba(0,0,0,0.18)', position: 'relative', fontFamily: 'Inter, Arial, sans-serif' }} onClick={e => e.stopPropagation()}>
@@ -353,4 +352,4 @@ export default function SearchApartments() {
       </footer>
     </div>
   );
-} 
+}

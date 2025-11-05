@@ -30,28 +30,24 @@ cd AggieRoomie
 npm install
 ```
 
-3. Set up environment variables:
-Create a `.env.local` file in the root directory with the following variables:
+3. Set up environment variables (optional):
+Create a `.env.local` file in the root directory if you want to use Google Places API for reviews:
 
 ```env
-# Google Places API Key (for reviews)
+# Google Places API Key (for reviews - optional)
 NEXT_PUBLIC_GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
-
-# Google Maps API Key (for map functionality)
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 ```
 
-### Getting Google API Keys
+**Note:** Maps functionality uses Leaflet with OpenStreetMap, which is completely free and doesn't require any API keys!
 
-1. **Google Places API Key** (for reviews):
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select an existing one
-   - Enable the "Places API" and "Places API (New)"
-   - Create credentials (API Key)
-   - Add the key to your `.env.local` file
+### Getting Google Places API Key (Optional)
 
-2. **Google Maps API Key** (for map functionality):
-   - In the same Google Cloud Console project
+If you want to use Google Places API for reviews:
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the "Places API" and "Places API (New)"
+4. Create credentials (API Key)
+5. Add the key to your `.env.local` file
 
 ## One-time populate Google Places reviews
 
@@ -94,8 +90,8 @@ The application will be available at `http://localhost:3000`
 
 - Next.js
 - React
-- Google Places API
-- Google Maps API
+- Leaflet & OpenStreetMap (free map tiles)
+- Google Places API (optional, for reviews)
 - CSS Modules
 - Modern JavaScript (ES6+)
 
@@ -113,5 +109,5 @@ This project is licensed under the MIT License.
 ## Acknowledgments
 
 - Texas A&M University for providing dorm information
-- Google Maps Platform for location services
+- OpenStreetMap contributors for free map tiles
 - Next.js team for the amazing framework 
