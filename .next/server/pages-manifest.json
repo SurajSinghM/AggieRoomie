@@ -2,8 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/search": "pages/search.js",
-  "/map": "pages/map.js",
   "/": "pages/index.js",
-  "/api/map": "pages/api/map.js"
+  "/search": "pages/search.js",
+  "/search-apartments": "pages/search-apartments.js"
 }
