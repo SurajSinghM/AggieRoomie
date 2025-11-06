@@ -599,14 +599,15 @@
   width: 100%;
   max-width: 500px;
   aspect-ratio: 1;
-  background: linear-gradient(135deg, white 0%, #f8f9fa 100%);
+  background: white;
   border-radius: var(--radius-3xl);
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(80, 0, 0, 0.1);
   overflow: hidden;
+  padding: var(--space-8);
 }
 
 .heroLogo {
@@ -615,12 +616,6 @@
   object-fit: contain;
   z-index: 2;
   position: relative;
-  animation: logoFloat 6s ease-in-out infinite;
-}
-
-@keyframes logoFloat {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-20px) scale(1.05); }
 }
 
 .cardGlow {
@@ -632,12 +627,7 @@
   height: 80%;
   background: radial-gradient(circle, rgba(80, 0, 0, 0.1) 0%, transparent 70%);
   border-radius: 50%;
-  animation: glowPulse 4s ease-in-out infinite;
-}
-
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.2); }
+  opacity: 0.3;
 }
 
 /* Features Section */
