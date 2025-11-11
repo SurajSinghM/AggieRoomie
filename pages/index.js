@@ -317,13 +317,10 @@ export default function Home() {
             <a href="https://reslife.tamu.edu" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>
               TAMU Residence Life
             </a>
-            <a href="https://www.tamu.edu" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>
-              Texas A&M University
-            </a>
           </div>
         </div>
         <div className={styles.footerBottom}>
-          <p>© 2025 AggieRoomie. Created by Suraj Singh M</p>
+          <p>© 2025 AggieRoomie. Created by Suraj Singh M - Not Affiliated with Texas A&M</p>
         </div>
       </footer>
     </div>

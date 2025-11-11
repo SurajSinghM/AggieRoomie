@@ -3,9 +3,7 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/search-apartments": "pages/search-apartments.js",
-  "/api/apartments": "pages/api/apartments.js",
   "/map": "pages/map.js",
-  "/api/dorms": "pages/api/dorms.js",
-  "/api/map": "pages/api/map.js"
+  "/search-apartments": "pages/search-apartments.js",
+  "/api/dorms": "pages/api/dorms.js"
 }
