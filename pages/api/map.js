@@ -7,26 +7,42 @@ export default async function handler(req, res) {
   }
 
   try {
-    const dormsPath = path.join(process.cwd(), 'data', 'dorms.json');
+    // Read dorm data and coordinates from dormcords.json
+    const enrichedPath = path.join(process.cwd(), 'data', 'dorms_with_reviews.json');
+    const defaultPath = path.join(process.cwd(), 'data', 'dorms.json');
+    const dormsPath = fs.existsSync(enrichedPath) ? enrichedPath : defaultPath;
     const coordsPath = path.join(process.cwd(), 'data', 'dormcords.json');
 
-    
     const dormsData = JSON.parse(fs.readFileSync(dormsPath, 'utf8'));
     const coordsData = JSON.parse(fs.readFileSync(coordsPath, 'utf8'));
 
-    
-    const dorms = dormsData.dorms.map(dorm => {
-      const coordinates = coordsData[dorm.name];
-      if (coordinates) {
+    const dormsList = Array.isArray(dormsData.dorms) ? dormsData.dorms : [];
+
+    // Always use coordinates from dormcords.json as the primary source
+    const dorms = dormsList.map(dorm => {
+      const coords = coordsData[dorm.name];
+      
+      // Prioritize coordinates from dormcords.json
+      if (coords && typeof coords.lat === 'number' && typeof coords.lng === 'number') {
         return {
           ...dorm,
           coordinates: {
-            lat: coordinates.lat,
-            lng: coordinates.lng
+            lat: coords.lat,
+            lng: coords.lng
           }
         };
       }
-      return dorm;
+
+      // Fallback to coordinates in dorm data if dormcords.json doesn't have it
+      if (dorm.coordinates && typeof dorm.coordinates.lat === 'number' && typeof dorm.coordinates.lng === 'number') {
+        return dorm;
+      }
+
+      // No coordinates available - return dorm without coordinates
+      return {
+        ...dorm,
+        coordinates: null
+      };
     });
 
     res.status(200).json(dorms);

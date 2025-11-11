@@ -27,10 +27,15 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/search-apartments": [
+    "/map": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/search-apartments.js"
+      "static/chunks/pages/map.js"
+    ],
+    "/search": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/search.js"
     ]
   },
   "ampFirstPages": []

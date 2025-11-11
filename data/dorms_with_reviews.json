@@ -8,22 +8,17 @@
         "lng": -96.336
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Double"
       ],
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,200"
-        },
-        {
-          "type": "Single",
-          "rate": "$4,200"
+          "rate": "$4,422"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
-        "bathroomType": "Community"
+        "yearBuilt": "1989",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "Appelt Hall",
@@ -56,22 +51,17 @@
         "lng": -96.3359
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Double"
       ],
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,200"
-        },
-        {
-          "type": "Single",
-          "rate": "$4,200"
+          "rate": "$4,422"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
-        "bathroomType": "Community"
+        "yearBuilt": "1989",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "Eppright Hall",
@@ -98,28 +88,23 @@
     },
     {
       "name": "Aston Hall",
-      "location": "North Campus",
+      "location": "South Campus - Commons",
       "coordinates": {
         "lat": 30.6182,
         "lng": -96.3375
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Suite"
       ],
       "rates": [
         {
-          "type": "Double",
-          "rate": "$3,500"
-        },
-        {
-          "type": "Single",
-          "rate": "$4,500"
+          "type": "Suite",
+          "rate": "$4,551"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "2013",
-        "bathroomType": "Community"
+        "yearBuilt": "1975",
+        "bathroomType": "Suite"
       },
       "googleReview": {
         "name": "Aston Hall",
@@ -152,22 +137,18 @@
         "lng": -96.337
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Double"
       ],
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,200"
-        },
-        {
-          "type": "Single",
-          "rate": "$4,200"
+          "rate": "$4,422"
         }
+        
       ],
       "buildingInfo": {
-        "yearBuilt": "2014",
-        "bathroomType": "Community"
+        "yearBuilt": "1981",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "Clements Hall",
@@ -194,7 +175,7 @@
     },
     {
       "name": "Dunn Hall",
-      "location": "North Campus",
+      "location": "South Campus - Commons",
       "coordinates": {
         "lat": 30.6185,
         "lng": -96.3378
@@ -205,11 +186,11 @@
       "rates": [
         {
           "type": "Suite",
-          "rate": "$3,500"
+          "rate": "$4,551"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "2013",
+        "yearBuilt": "1972",
         "bathroomType": "Suite"
       },
       "googleReview": {
@@ -224,12 +205,12 @@
           },
           {
             "author": "Kaylah Perez",
-            "rating": 1,
+            "rating": 3,
             "text": "The amount you pay for this dorm is not worth it. If you are going to choose a hall in the commons I would choose Mosher or Krueger as these are recently renovated. My shower had rust on the walls and..."
           },
           {
             "author": "Leah Reyes",
-            "rating": 1,
+            "rating": 5,
             "text": "Dunn Hall is a very convenient place to live. It is in the commons which in general has a lot of useful ammenities like a store, food market, study room, dining hall, and game room. But out of all the..."
           }
         ]
@@ -237,22 +218,27 @@
     },
     {
       "name": "Fowler Hall",
-      "location": "South Campus",
+      "location": "North Campus",
       "coordinates": {
         "lat": 30.6178,
         "lng": -96.3368
       },
       "roomTypes": [
-        "Single Suite"
+        "Single",
+        "Double"
       ],
       "rates": [
         {
-          "type": "Single Suite",
-          "rate": "$3,800"
+          "type": "Single",
+          "rate": "$4,273"
+        },
+        {
+          "type": "Double",
+          "rate": "$3,005"  
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
+        "yearBuilt": "1964",
         "bathroomType": "Suite"
       },
       "googleReview": {
@@ -287,20 +273,20 @@
       },
       "roomTypes": [
         "Single",
-        "Suite"
+        "Double"
       ],
       "rates": [
         {
           "type": "Single",
-          "rate": "$3,800"
+          "rate": "$3,772"
         },
         {
-          "type": "Suite",
-          "rate": "$3,500"
+          "type": "Double",
+          "rate": "$2,504"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
+        "yearBuilt": "1931",
         "bathroomType": "Suite"
       },
       "googleReview": {
@@ -328,7 +314,7 @@
     },
     {
       "name": "Hobby Hall",
-      "location": "South Campus",
+      "location": "North Campus",
       "coordinates": {
         "lat": 30.6177,
         "lng": -96.3367
@@ -339,12 +325,12 @@
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,200"
+          "rate": "$4,422"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
-        "bathroomType": "Semi-Private"
+        "yearBuilt": "1980",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "Hobby Hall",
@@ -377,27 +363,27 @@
         "lng": -96.3382
       },
       "roomTypes": [
+        "Singh",
         "Double",
-        "Single",
         "Suite"
       ],
       "rates": [
         {
-          "type": "Double",
-          "rate": "$3,800"
+          "type": "Single",
+          "rate": "$7,343"
         },
         {
-          "type": "Single",
-          "rate": "$4,800"
+          "type": "Double",
+          "rate": "$5,494"
         },
         {
           "type": "Suite",
-          "rate": "$5,200"
+          "rate": "$5,494"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "2012",
-        "bathroomType": "Suite"
+        "yearBuilt": "2013",
+        "bathroomType": "Private, Suite"
       },
       "googleReview": {
         "name": "Hullabaloo Hall",
@@ -424,7 +410,7 @@
     },
     {
       "name": "Krueger Hall",
-      "location": "North Campus",
+      "location": "South Campus - Commons",
       "coordinates": {
         "lat": 30.6186,
         "lng": -96.338
@@ -435,11 +421,11 @@
       "rates": [
         {
           "type": "Suite",
-          "rate": "$3,500"
+          "rate": "$4,551"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "2013",
+        "yearBuilt": "1972",
         "bathroomType": "Suite"
       },
       "googleReview": {
@@ -467,7 +453,7 @@
     },
     {
       "name": "Lechner Hall",
-      "location": "South Campus",
+      "location": "North Campus",
       "coordinates": {
         "lat": 30.6175,
         "lng": -96.3365
@@ -478,12 +464,12 @@
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,200"
+          "rate": "$4,422"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
-        "bathroomType": "Semi-Private"
+        "yearBuilt": "1989",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "Lechner Hall",
@@ -510,28 +496,23 @@
     },
     {
       "name": "Mosher Hall",
-      "location": "South Campus",
+      "location": "South Campus - Commons",
       "coordinates": {
         "lat": 30.6184,
         "lng": -96.3376
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Suite"
       ],
       "rates": [
         {
-          "type": "Double",
-          "rate": "$3,300"
-        },
-        {
-          "type": "Single",
-          "rate": "$4,300"
+          "type": "Suite",
+          "rate": "$4,551"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "2015",
-        "bathroomType": "Community"
+        "yearBuilt": "1975",
+        "bathroomType": "Suite"
       },
       "googleReview": {
         "name": "Mosher Hall",
@@ -558,27 +539,22 @@
     },
     {
       "name": "Moses Hall",
-      "location": "South Campus",
+      "location": "North Campus",
       "coordinates": {
         "lat": 30.6176,
         "lng": -96.3366
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Double"
       ],
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,400"
-        },
-        {
-          "type": "Single",
-          "rate": "$4,400"
+          "rate": "$3,005"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "2016",
+        "yearBuilt": "1942",
         "bathroomType": "Community"
       },
       "googleReview": {
@@ -617,12 +593,12 @@
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,200"
+          "rate": "4,422"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
-        "bathroomType": "Semi-Private"
+        "yearBuilt": "1989",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "Rudder Hall",
@@ -660,12 +636,12 @@
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,200"
+          "rate": "$4,422"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
-        "bathroomType": "Semi-Private"
+        "yearBuilt": "1981",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "Underwood Hall",
@@ -698,22 +674,17 @@
         "lng": -96.3377
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Double"
       ],
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,400"
-        },
-        {
-          "type": "Single",
-          "rate": "$4,400"
+          "rate": "$4,422"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "2013",
-        "bathroomType": "Community"
+        "yearBuilt": "1980",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "Neeley Hall",
@@ -746,22 +717,22 @@
         "lng": -96.3374
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Single",
+        "Double"
       ],
       "rates": [
         {
-          "type": "Double",
-          "rate": "$3,300"
+          "type": "Single",
+          "rate": "$2,504"
         },
         {
-          "type": "Single",
-          "rate": "$4,300"
+          "type": "Double",
+          "rate": "$3,772"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "2013",
-        "bathroomType": "Community"
+        "yearBuilt": "1931",
+        "bathroomType": "Suite, Private"
       },
       "googleReview": {
         "name": "Walton Hall",
@@ -788,28 +759,23 @@
     },
     {
       "name": "Haas Hall",
-      "location": "South Campus",
+      "location": "North Campus",
       "coordinates": {
         "lat": 30.6172,
         "lng": -96.3362
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Double"
       ],
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,200"
-        },
-        {
-          "type": "Single",
-          "rate": "$4,200"
+          "rate": "$4,422"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
-        "bathroomType": "Community"
+        "yearBuilt": "1979",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "Haas Hall",
@@ -836,28 +802,23 @@
     },
     {
       "name": "McFadden Hall",
-      "location": "South Campus",
+      "location": "North Campus",
       "coordinates": {
         "lat": 30.6171,
         "lng": -96.3361
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Double"
       ],
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,200"
-        },
-        {
-          "type": "Single",
-          "rate": "$4,200"
+          "rate": "$4,422"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
-        "bathroomType": "Community"
+        "yearBuilt": "1979",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "McFadden Hall",
@@ -890,22 +851,17 @@
         "lng": -96.3358
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Double"
       ],
       "rates": [
         {
           "type": "Double",
-          "rate": "$3,200"
-        },
-        {
-          "type": "Single",
-          "rate": "$4,200"
+          "rate": "$4,422"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
-        "bathroomType": "Community"
+        "yearBuilt": "1989",
+        "bathroomType": "Private"
       },
       "googleReview": {
         "name": "Wells Hall",
@@ -938,22 +894,22 @@
         "lng": -96.3348997
       },
       "roomTypes": [
-        "Double",
-        "Single"
+        "Single",
+        "Double"
       ],
       "rates": [
         {
-          "type": "Double",
-          "rate": "$3,200"
+          "type": "Single",
+          "rate": "$4,273"
         },
         {
-          "type": "Single",
-          "rate": "$4,200"
+          "type": "Double",
+          "rate": "$3,005"
         }
       ],
       "buildingInfo": {
-        "yearBuilt": "1968",
-        "bathroomType": "Community"
+        "yearBuilt": "1964",
+        "bathroomType": "Suite"
       },
       "googleReview": {
         "name": "Keathley Hall",
