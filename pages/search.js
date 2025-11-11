@@ -106,9 +106,8 @@ export default function Search() {
         
         const locationGroups = {
           'North Campus': ['North Campus'],
-          'South Campus': ['South Campus'],
-          'East Campus': ['East Campus'],
-          'West Campus': ['West Campus']
+          'South Campus': ['South Campus', 'South Campus - Commons'],
+          'South Campus - Commons': ['South Campus - Commons', 'South Campus']
         };
         const preferredGroup = locationGroups[searchCriteria.location];
         if (preferredGroup && preferredGroup.includes(dorm.location)) {
@@ -269,7 +268,7 @@ export default function Search() {
     let featureScore = 0;
     
     
-    const prestigiousLocations = ['North Campus', 'South Campus'];
+    const prestigiousLocations = ['North Campus', 'South Campus', 'South Campus - Commons'];
     if (prestigiousLocations.includes(dorm.location)) {
       featureScore += 0.5;
     } else {
@@ -282,6 +281,12 @@ export default function Search() {
       featureScore += 0.5;
     } else {
       featureScore += 0.2; 
+    }
+
+    // Bonus for specific prestigious halls
+    const prestigiousHalls = ['Kreuger Hall', 'Dunn Hall', 'Mosher Hall', 'Aston Hall'];
+    if (prestigiousHalls.includes(dorm.name)) {
+      featureScore += 1.0;
     }
 
     
@@ -557,10 +562,11 @@ export default function Search() {
                 className={styles.select}
               >
                 <option value="">All Locations</option>
-                <option value="North Campus">North Campus</option>
-                <option value="South Campus">South Campus</option>
-                <option value="East Campus">East Campus</option>
-                <option value="West Campus">West Campus</option>
+                {locations.map((location) => (
+                  <option key={location} value={location}>
+                    {location}
+                  </option>
+                ))}
               </select>
             </div>
 

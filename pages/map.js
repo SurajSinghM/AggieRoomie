@@ -225,23 +225,6 @@ export default function Map() {
                         <h3>{dorm.name}</h3>
                         <p>{dorm.location || ''}</p>
                         <p><strong>Room Types:</strong> {dorm.roomTypes ? dorm.roomTypes.join(', ') : 'N/A'}</p>
-                        {dorm.googleReview && (
-                          <>
-                            <p><strong>Rating:</strong> {dorm.googleReview.rating ?? 'N/A'} ({dorm.googleReview.reviews ?? 0} reviews)</p>
-                            {dorm.googleReview.recentReviews && dorm.googleReview.recentReviews.length > 0 && (
-                              <div className={styles.recentReviews}>
-                                <strong>Recent reviews</strong>
-                                <ul>
-                                  {dorm.googleReview.recentReviews.slice(0, 3).map((r, idx) => (
-                                    <li key={idx}>
-                                      {r.author ? <em>{r.author}</em> : ''}: {r.text ? r.text.replace(/</g, '&lt;') : ''}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </>
-                        )}
                         <div className={styles.infoWindowActions}>
                           <button 
                             type="button"

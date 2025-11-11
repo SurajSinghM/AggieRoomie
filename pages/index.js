@@ -9,11 +9,6 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.starsContainer}>
-        <div className={styles.stars}></div>
-        <div className={styles.stars2}></div>
-        <div className={styles.stars3}></div>
-      </div>
       <Head>
         <title>AggieRoomie - Your Perfect Dorm Finder</title>
         <meta name="description" content="Find your perfect dorm at Texas A&M University with our comprehensive search and comparison tools" />

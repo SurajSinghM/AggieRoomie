@@ -3,8 +3,7 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/map": "pages/map.js",
+  "/": "pages/index.js",
   "/search": "pages/search.js",
-  "/api/dorms": "pages/api/dorms.js",
-  "/api/map": "pages/api/map.js",
-  "/": "pages/index.js"
+  "/api/map": "pages/api/map.js"
 }
