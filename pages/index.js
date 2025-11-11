@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -6,6 +6,35 @@ import styles from '../styles/Home.module.css';
 
 export default function Home() {
   const router = useRouter();
+  const [averageRating, setAverageRating] = useState('4.8');
+
+  useEffect(() => {
+    const fetchAverageRating = async () => {
+      try {
+        const response = await fetch('/api/dorms');
+        if (!response.ok) {
+          throw new Error('Failed to fetch dorms');
+        }
+        const dorms = await response.json();
+        
+        // Calculate average rating from all dorms with ratings
+        const ratings = dorms
+          .map(dorm => dorm.googleReview?.rating)
+          .filter(rating => rating !== undefined && rating !== null);
+        
+        if (ratings.length > 0) {
+          const sum = ratings.reduce((acc, rating) => acc + rating, 0);
+          const average = sum / ratings.length;
+          setAverageRating(average.toFixed(1));
+        }
+      } catch (err) {
+        console.error('Error fetching average rating:', err);
+        // Keep default value if fetch fails
+      }
+    };
+
+    fetchAverageRating();
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -55,16 +84,16 @@ export default function Home() {
             </p>
             <div className={styles.heroStats}>
               <div className={styles.statItem}>
-                <div className={styles.statNumber}>50+</div>
+                <div className={styles.statNumber}>20+</div>
                 <div className={styles.statLabel}>Dorms Listed</div>
               </div>
               <div className={styles.statItem}>
-                <div className={styles.statNumber}>1000+</div>
+                <div className={styles.statNumber}>100+</div>
                 <div className={styles.statLabel}>Students Helped</div>
               </div>
               <div className={styles.statItem}>
-                <div className={styles.statNumber}>4.8★</div>
-                <div className={styles.statLabel}>Average Rating</div>
+                <div className={styles.statNumber}>{averageRating}★</div>
+                <div className={styles.statLabel}>Average Dorm Rating</div>
               </div>
             </div>
             <div className={styles.heroActions}>
@@ -228,7 +257,7 @@ export default function Home() {
                 <div className={styles.infoCardContent}>
                   <div className={styles.factItem}>
                     <span className={styles.factLabel}>Total Halls</span>
-                    <span className={styles.factValue}>50+</span>
+                    <span className={styles.factValue}>20+</span>
                   </div>
                   <div className={styles.factItem}>
                     <span className={styles.factLabel}>Room Types</span>
@@ -236,11 +265,11 @@ export default function Home() {
                   </div>
                   <div className={styles.factItem}>
                     <span className={styles.factLabel}>Bathroom Styles</span>
-                    <span className={styles.factValue}>Community, Suite</span>
+                    <span className={styles.factValue}>Community, Suite, Private</span>
                   </div>
                   <div className={styles.factItem}>
                     <span className={styles.factLabel}>Price Range</span>
-                    <span className={styles.factValue}>$3,200 - $5,000/sem</span>
+                    <span className={styles.factValue}>$2,500 - $7,400/sem</span>
                   </div>
                 </div>
               </div>

@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import styles from '../styles/Search.module.css';
+import mapStyles from '../styles/Map.module.css';
 
 // Dynamically import MapContainer to avoid SSR issues with Leaflet
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
@@ -18,6 +19,8 @@ export default function SearchApartments() {
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [leafletLoaded, setLeafletLoaded] = useState(false);
+  const [showDetailsCard, setShowDetailsCard] = useState(false);
+  const [detailsApartment, setDetailsApartment] = useState(null);
 
   const defaultCenter = [30.6152, -96.3410];
 
@@ -65,19 +68,17 @@ export default function SearchApartments() {
     fetchApartments();
   }, []);
 
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.detail) handleShowDetails(e.detail);
-    };
-    window.addEventListener('showAptDetails', handler);
-    return () => window.removeEventListener('showAptDetails', handler);
-  }, []);
 
-  const handleShowDetails = async (placeId) => {
+  const handleShowDetails = async (apartment) => {
+    // Prevent any navigation
+    if (typeof window !== 'undefined') {
+      window.event?.preventDefault?.();
+    }
+    
     setDetailsLoading(true);
     setAptDetails(null);
     
-    const local = apartments.find(a => a.placeId === placeId);
+    const local = apartments.find(a => a.placeId === apartment.placeId || a.name === apartment.name);
     if (local) {
       setSelectedApt(local);
       
@@ -92,16 +93,21 @@ export default function SearchApartments() {
         photos: local.photoUrl ? [{ photo_reference: null }] : null
       };
       setAptDetails(detailsFromLocal);
+      setDetailsApartment({ ...local, details: detailsFromLocal });
+      setShowDetailsCard(true);
       setDetailsLoading(false);
       return;
     }
 
     setSelectedApt(null);
     try {
+      const placeId = apartment.placeId || apartment;
       const res = await fetch(`/api/google-places?placeId=${placeId}`);
       if (!res.ok) throw new Error('Failed to fetch details');
       const data = await res.json();
       setAptDetails(data);
+      setDetailsApartment({ ...apartment, details: data });
+      setShowDetailsCard(true);
     } catch (err) {
       console.warn('Failed to fetch place details:', err && err.message);
       setAptDetails(null);
@@ -110,7 +116,9 @@ export default function SearchApartments() {
     }
   };
 
-  const handleCloseModal = () => {
+  const handleCloseDetails = () => {
+    setShowDetailsCard(false);
+    setDetailsApartment(null);
     setSelectedApt(null);
     setAptDetails(null);
   };
@@ -235,7 +243,7 @@ export default function SearchApartments() {
                         )}
                         <button
                           style={{ color: '#fff', background: '#800000', borderRadius: 8, padding: '4px 12px', fontWeight: 600, fontSize: 13, border: 'none', marginTop: 6, display: 'inline-block', cursor: 'pointer' }}
-                          onClick={() => handleShowDetails(apt.placeId)}
+                          onClick={() => handleShowDetails(apt)}
                         >
                           More Details
                         </button>
@@ -273,22 +281,33 @@ export default function SearchApartments() {
                       icon={apartmentIcon}
                     >
                       <Popup>
-                        <div style={{ fontWeight: 700, fontSize: 16 }}>
-                          <div>{apt.name}</div>
-                          <div style={{ fontSize: 13, marginTop: 4 }}>{apt.address}</div>
+                        <div className={mapStyles.infoWindow}>
+                          <h3>{apt.name}</h3>
+                          <p>{apt.address || ''}</p>
                           {apt.rating && (
-                            <div style={{ color: '#ffd700', fontWeight: 600, fontSize: 13, marginTop: 4 }}>
-                              ★ {apt.rating} ({apt.userRatingsTotal})
-                            </div>
+                            <p><strong>Rating:</strong> {apt.rating} ({apt.userRatingsTotal || 0} reviews)</p>
                           )}
-                          <button
-                            style={{ color: '#800000', fontWeight: 600, fontSize: 13, textDecoration: 'underline', marginTop: 4, display: 'inline-block', background: 'none', border: 'none', cursor: 'pointer' }}
-                            onClick={() => {
-                              window.dispatchEvent(new CustomEvent('showAptDetails', { detail: apt.placeId }));
-                            }}
-                          >
-                            More Details
-                          </button>
+                          <div className={mapStyles.infoWindowActions}>
+                            <button 
+                              type="button"
+                              className={mapStyles.infoButton}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (e.nativeEvent) {
+                                  e.nativeEvent.stopImmediatePropagation();
+                                }
+                                handleShowDetails(apt);
+                                return false;
+                              }}
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }}
+                            >
+                              More Details
+                            </button>
+                          </div>
                         </div>
                       </Popup>
                     </Marker>
@@ -298,51 +317,115 @@ export default function SearchApartments() {
             </div>
           )}
         </div>
-        {selectedApt && (
-          <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.45)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={handleCloseModal}>
-            <div style={{ background: '#fff', borderRadius: 18, minWidth: 340, maxWidth: 420, padding: 32, boxShadow: '0 8px 32px rgba(0,0,0,0.18)', position: 'relative', fontFamily: 'Inter, Arial, sans-serif' }} onClick={e => e.stopPropagation()}>
-              <button onClick={handleCloseModal} style={{ position: 'absolute', top: 16, right: 20, background: 'none', border: 'none', fontSize: 26, color: '#800000', cursor: 'pointer', fontWeight: 700 }}>&times;</button>
-              <div style={{ fontWeight: 800, fontSize: 26, marginBottom: 16, color: '#222', letterSpacing: '-0.5px' }}>{selectedApt.name}</div>
-              {detailsLoading && <div style={{ color: '#800000', fontWeight: 600 }}>Loading...</div>}
-              {aptDetails && (
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
-                    <span style={{ color: '#800000', fontSize: 22, marginRight: 10 }}>📍</span>
-                    <span style={{ fontSize: 16, color: '#333', wordBreak: 'break-word' }}>{aptDetails.address || aptDetails.formatted_address}</span>
+        {/* Details Popout Panel */}
+        {showDetailsCard && detailsApartment && (
+          <>
+            <div className={mapStyles.modalOverlay} onClick={handleCloseDetails}></div>
+            <div className={mapStyles.detailsModal}>
+              <div className={mapStyles.modalHeaderBar}>
+                <button className={mapStyles.modalClose} onClick={handleCloseDetails}>&times;</button>
+              </div>
+              <div className={mapStyles.modalContent}>
+                <div className={mapStyles.modalHeader}>
+                  <h2 className={mapStyles.modalTitle}>
+                    {detailsApartment.name}
+                    {detailsApartment.details?.website && (
+                      <a 
+                        href={detailsApartment.details.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className={mapStyles.modalOfficialLink}
+                      >
+                        🔗 link
+                      </a>
+                    )}
+                  </h2>
+                </div>
+
+                <div className={mapStyles.modalSection}>
+                  <div className={mapStyles.modalInfoRow}>
+                    <span className={mapStyles.modalIcon}>📍</span>
+                    <span className={mapStyles.modalText}>{detailsApartment.address || detailsApartment.details?.formatted_address || 'Address not available'}</span>
                   </div>
-                  {aptDetails.opening_hours && (
-                    <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center' }}>
-                      <span style={{ color: aptDetails.opening_hours.open_now ? '#16a34a' : '#d32f2f', fontWeight: 700, marginRight: 8 }}>{aptDetails.opening_hours.open_now ? 'Open' : 'Closed'}</span>
-                      {aptDetails.opening_hours.weekday_text && (
-                        <span style={{ color: '#555', fontSize: 15 }}>{aptDetails.opening_hours.weekday_text[0]}</span>
-                      )}
+                </div>
+
+                {detailsApartment.rating && (
+                  <div className={mapStyles.modalSection}>
+                    <h3 className={mapStyles.modalSectionTitle}>Rating</h3>
+                    <div className={mapStyles.modalRating}>
+                      <span className={mapStyles.modalRatingStars}>
+                        {'★'.repeat(Math.floor(detailsApartment.rating || 0))}
+                        {'☆'.repeat(5 - Math.floor(detailsApartment.rating || 0))}
+                      </span>
+                      <span className={mapStyles.modalRatingValue}>
+                        {detailsApartment.rating?.toFixed(1) || 'N/A'}
+                      </span>
+                      <span className={mapStyles.modalRatingCount}>
+                        ({detailsApartment.userRatingsTotal || detailsApartment.details?.user_ratings_total || 0} reviews)
+                      </span>
                     </div>
-                  )}
-                  {aptDetails.website && (
-                    <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center' }}>
-                      <span style={{ color: '#1976d2', fontSize: 20, marginRight: 10 }}>🌐</span>
-                      <a href={aptDetails.website} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', textDecoration: 'underline', fontSize: 16, fontWeight: 500, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>
-                        {(() => {
-                          try {
-                            const url = new URL(aptDetails.website);
-                            return url.hostname.replace(/^www\./, '');
-                          } catch {
-                            return aptDetails.website.replace(/^https?:\/\//, '').split('/')[0];
-                          }
-                        })()}
+                  </div>
+                )}
+
+                {detailsApartment.details?.formatted_phone_number && (
+                  <div className={mapStyles.modalSection}>
+                    <div className={mapStyles.modalInfoRow}>
+                      <span className={mapStyles.modalIcon}>📞</span>
+                      <a href={`tel:${detailsApartment.details.formatted_phone_number}`} className={mapStyles.modalText} style={{ color: 'var(--aggie-maroon)', textDecoration: 'underline' }}>
+                        {detailsApartment.details.formatted_phone_number}
                       </a>
                     </div>
-                  )}
-                  {aptDetails.formatted_phone_number && (
-                    <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center' }}>
-                      <span style={{ color: '#d32f2f', fontSize: 20, marginRight: 10 }}>📞</span>
-                      <a href={`tel:${aptDetails.formatted_phone_number}`} style={{ color: '#d32f2f', textDecoration: 'underline', fontSize: 16, fontWeight: 500 }}>{aptDetails.formatted_phone_number}</a>
+                  </div>
+                )}
+
+                {detailsApartment.distance && (
+                  <div className={mapStyles.modalSection}>
+                    <h3 className={mapStyles.modalSectionTitle}>Distance</h3>
+                    {detailsApartment.distance.drive && detailsApartment.distance.drive.distance && (
+                      <div className={mapStyles.modalInfoRow}>
+                        <span className={mapStyles.modalIcon}>🚗</span>
+                        <span className={mapStyles.modalText}>
+                          {((detailsApartment.distance.drive.distance.value / 1609.34).toFixed(2))} mi
+                          {detailsApartment.distance.drive.duration && ` (${detailsApartment.distance.drive.duration.text})`}
+                        </span>
+                      </div>
+                    )}
+                    {detailsApartment.distance.walk && detailsApartment.distance.walk.duration && (
+                      <div className={mapStyles.modalInfoRow}>
+                        <span className={mapStyles.modalIcon}>🚶</span>
+                        <span className={mapStyles.modalText}>{detailsApartment.distance.walk.duration.text} walk</span>
+                      </div>
+                    )}
+                    {detailsApartment.distance.bike && detailsApartment.distance.bike.duration && (
+                      <div className={mapStyles.modalInfoRow}>
+                        <span className={mapStyles.modalIcon}>🚲</span>
+                        <span className={mapStyles.modalText}>{detailsApartment.distance.bike.duration.text} bike</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {detailsApartment.details?.reviews && detailsApartment.details.reviews.length > 0 && (
+                  <div className={mapStyles.modalSection}>
+                    <h3 className={mapStyles.modalSectionTitle}>Reviews</h3>
+                    <div className={mapStyles.modalReviews}>
+                      {detailsApartment.details.reviews.slice(0, 3).map((review, idx) => (
+                        <div key={idx} className={mapStyles.modalReviewItem}>
+                          <div className={mapStyles.modalReviewHeader}>
+                            <span className={mapStyles.modalReviewAuthor}>{review.author_name || 'Anonymous'}</span>
+                            <span className={mapStyles.modalReviewRating}>
+                              {'★'.repeat(review.rating || 0)}
+                            </span>
+                          </div>
+                          <p className={mapStyles.modalReviewText}>{review.text || ''}</p>
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          </>
         )}
       </main>
       <footer className={styles.footer}>
