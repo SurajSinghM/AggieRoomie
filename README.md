@@ -126,3 +126,6 @@ The application will be available at `http://localhost:3000`
 
 This project is licensed under the MIT License.
 
+
+Not Affiliated with Texas A&M
+
