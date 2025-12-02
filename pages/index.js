@@ -40,6 +40,8 @@ export default function Home() {
     <div className={styles.container}>
       <Head>
         <title>AggieRoomie - Your Perfect Dorm Finder</title>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8324417197634076"
+        crossorigin="anonymous"></script>
         <meta name="description" content="Find your perfect dorm at Texas A&M University with our comprehensive search and comparison tools" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

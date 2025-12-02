@@ -155,6 +155,8 @@ export default function Map() {
     <div className={styles.container}>
       <Head>
         <title>Campus Map - AggieRoomie</title>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8324417197634076"
+        crossorigin="anonymous"></script>
         <meta name="description" content="View dorm locations on Texas A&M campus map" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

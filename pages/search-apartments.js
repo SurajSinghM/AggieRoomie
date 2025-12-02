@@ -160,6 +160,8 @@ export default function SearchApartments() {
     <div className={styles.container}>
       <Head>
         <title>Apartment Search | AggieRoomie</title>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8324417197634076"
+        crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossOrigin="" />
       </Head>
       <nav className={styles.navbar}>

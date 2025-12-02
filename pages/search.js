@@ -513,6 +513,8 @@ export default function Search() {
         
         {}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8324417197634076"
+        crossorigin="anonymous"></script>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
